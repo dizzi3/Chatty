@@ -6,7 +6,7 @@ class Chat extends React.Component{
 
         return (
 
-            <div>ee spysz?</div>
+            <div>chattin..</div>
 
         )
 
