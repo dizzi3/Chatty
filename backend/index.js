@@ -4,9 +4,13 @@ const server = require('http').createServer(app)
 const { Server } = require('socket.io')
 const io = new Server(server)
 const config = require('./config')
-
+const path = require('path')
+const bodyParser = require('body-parser')
 const router = require('./routes/router')
+require('./database/mongoose')
 
+app.use(bodyParser.json())
+app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', router)
 
 io.on('connection', (socket) => {
@@ -17,7 +21,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('msg', (msg) => {
-        console.log(msg)
+        
     })
 })
 

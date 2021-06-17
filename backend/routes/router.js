@@ -1,12 +1,12 @@
 const express = require('express')
 const router = express.Router()
 
-router.get('/login', (req, res) => {
-    res.sendFile('./login/index.html', { root: __dirname })
-})
+const Actions = require('../actions/Actions')
 
-router.get('/chat', (req, res) => {
-    res.sendFile('./chat/index.html', { root: __dirname })
-})
+router.post('/sign-in', Actions.signIn)
+router.get('/login', Actions.login)
+
+router.get('/chat', Actions.chat)
+router.post('/chat', Actions.sendMessage)
 
 module.exports = router
