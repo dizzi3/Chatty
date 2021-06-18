@@ -24,7 +24,7 @@ class Actions{
     }
 
     async login(req, res){
-
+        
         User.findOne({
             username: req.body.username,
             password: req.body.password

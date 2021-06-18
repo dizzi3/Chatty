@@ -1,16 +1,17 @@
 import React from 'react'
+import './chat-style.css'
+import { useLocation } from 'react-router-dom'
 
-class Chat extends React.Component{
+function Chat(props){
 
-    render(){
+    const location = useLocation()
+    const id = location.state._id
 
-        return (
+    return (
 
-            <div>chattin..</div>
+        <div className="chatStyle">{id}</div>
 
-        )
-
-    }
+    )
 
 }
 
