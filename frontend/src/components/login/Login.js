@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import './login-style.css'
 import axios from '../../axios'
@@ -29,13 +29,17 @@ function Login(props){
             
             history.push({
                 pathname: "/chat",
-                state: { _id : res.data._id }
+                state: { 
+                    username: res.data.username,
+                    userId: res.data._id
+                }
             })
 
         }catch(error){
             
             //TODO: display a message about wrong username/password
-            console.log(error.response.data.message)
+            //console.log(error.response.data.message)
+            console.log(error)
         }
     }
 

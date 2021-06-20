@@ -24,7 +24,7 @@ class Actions{
     }
 
     async login(req, res){
-        
+
         User.findOne({
             username: req.body.username,
             password: req.body.password
@@ -36,7 +36,11 @@ class Actions{
             if(user === null)
             return res.status(422).json({ message: "user does not exist in the database!"})
 
-            res.status(200).json({ _id: user._id })
+            res.status(200).json({ 
+                _id: user._id,
+                username: req.body.username
+            })
+            
         })
 
     }
@@ -44,10 +48,11 @@ class Actions{
     async sendMessage(req, res){
         const content = req.body.content
         const fromUser = req.body.fromUser
+        const userId = req.body.userId
 
         let msg
         try{
-            msg = new Message( { content, fromUser })
+            msg = new Message( { content, fromUser, userId })
             await msg.save()
         }catch(error){
             return res.status(422).json( { message: error.message })

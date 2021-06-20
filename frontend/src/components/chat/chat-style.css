@@ -11,5 +11,31 @@
 
     background-color: #121212;
     text-align: center;
-    color: white;
+    color: #fff;
+}
+
+input{
+    margin-bottom: 15px;
+}
+
+#messages { 
+    list-style-type: none; 
+    margin: 0; 
+    padding: 15px;
+    background-color: #8f93ff;
+    text-align: left;
+    width: 98%;
+    height: 50%;
+    margin-bottom: 25px;
+}
+
+#messages > li { 
+    padding: 0.5rem 1rem;
+    background-color: #ff8bbb;
+    color: black;
+}
+
+#messages > li:nth-child(odd) { 
+    background: #f089e8; 
+    color: black;
 }

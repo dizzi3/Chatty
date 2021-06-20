@@ -2,7 +2,7 @@ import React from 'react'
 import Chat from '../chat/Chat'
 import Login from '../login/Login'
 import SignIn from '../sign-in/SignIn'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 
 class Chatty extends React.Component{
 
@@ -13,6 +13,10 @@ class Chatty extends React.Component{
             <div className="App">
                 
             <Router>
+
+                <Route exact path="/">
+                    <Redirect to="/login" />
+                </Route>
 
                 <Route path='/chat'>
                     <Chat />
