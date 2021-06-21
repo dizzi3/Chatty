@@ -25,8 +25,10 @@ input{
     background-color: #8f93ff;
     text-align: left;
     width: 98%;
-    height: 50%;
+    height: 10%;
     margin-bottom: 25px;
+    overflow: hidden;
+    overflow-y: scroll;
 }
 
 #messages > li { 

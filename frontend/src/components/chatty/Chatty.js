@@ -23,7 +23,7 @@ class Chatty extends React.Component{
                 </Route>
 
                 <Route path='/login'>
-                    <Login onLogin={(data) => this.onLogin(data)}/>
+                    <Login />
                 </Route>
 
                 <Route path='/sign-in'>

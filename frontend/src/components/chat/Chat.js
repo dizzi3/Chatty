@@ -5,7 +5,7 @@ import axios from '../../axios'
 import { socket } from '../../services/socket'
 
 function Chat(props){
-    
+
     useEffect(() => {
 
         socket.on('msg', (data) => {
@@ -13,11 +13,12 @@ function Chat(props){
             const msgItem = document.createElement('li')
             msgItem.textContent = '[' + data.username + ']: ' + data.msg
             msgList.appendChild(msgItem)
+
+            scrollToTheBottomOfMsgList()
         })
 
     }, [] )
 
-    
 
     const location = useLocation()
     const username = location.state.username
@@ -28,6 +29,11 @@ function Chat(props){
     const changeMsgHandler = (event) => {
         const value = event.target.value
         setMsg(value)
+    }
+
+    const scrollToTheBottomOfMsgList = () => {
+        const msgList = document.getElementById('messages')
+        msgList.scrollTo(0, msgList.scrollHeight)  
     }
 
     const OnSendMessage = async () => {
@@ -44,6 +50,7 @@ function Chat(props){
                 fromUser: username,
                 userId: userId
             })
+
 
         }catch(error){
 
