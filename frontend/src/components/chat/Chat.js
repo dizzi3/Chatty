@@ -17,6 +17,42 @@ function Chat(props){
             scrollToTheBottomOfMsgList()
         })
 
+        socket.on('disconnect', () => {
+            console.log('user ' + username + ' disconnected')
+        })
+
+        socket.on('userStatusChanged', (users) => {
+
+            const usersSection = document.getElementById('users')
+            usersSection.innerHTML = ''
+            
+            console.log(users)
+
+            users.forEach((user, index) => {
+
+                if(!(user.username === username)){
+
+                    const userItem = document.createElement('li')
+                
+                    let status = ''
+                    if(user.online)
+                        status = "<span style='color: green'>online</span>"
+                    else
+                        status = '<span style="color: red">offline</span>'
+    
+                    userItem.innerHTML = '[' + user.username + '] is ' + status
+                    usersSection.appendChild(userItem)
+
+                }
+                
+            })
+        })
+
+        socket.emit('userConnected', {
+            username: location.state.username,
+            userID: location.state.userId
+        })
+
     }, [] )
 
 
@@ -66,15 +102,27 @@ function Chat(props){
 
         <div className="chatStyle">
 
-            <ul id="messages"></ul>
+            <div id="chatSection">
 
-            <input type="text" 
-                    value={msg}
-                    onChange={changeMsgHandler}></input>
+                <ul id="messages"></ul>
 
-            <br></br>
+                <input type="text" 
+                        value={msg}
+                        onChange={changeMsgHandler}></input>
 
-            <button onClick={ () => OnSendMessage() }>Send</button>
+                <br></br>
+
+                <button onClick={ () => OnSendMessage() }>Send</button>
+
+            </div>
+
+            <div id="usersSection"> 
+
+                <ul id="users">
+
+                </ul>
+
+            </div>
 
         </div>
 

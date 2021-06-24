@@ -25,7 +25,7 @@ input{
     background-color: #8f93ff;
     text-align: left;
     width: 98%;
-    height: 10%;
+    height: 55%;
     margin-bottom: 25px;
     overflow: hidden;
     overflow-y: scroll;
@@ -40,4 +40,20 @@ input{
 #messages > li:nth-child(odd) { 
     background: #f089e8; 
     color: black;
+}
+
+#chatSection{
+    float: left;
+    width: 80%;
+    height: 100%;
+}
+
+#usersSection{
+    float: left;
+    width: 20%;
+    height: 100%;
+}
+
+ul{
+    list-style-type: none;
 }
