@@ -8,6 +8,8 @@ function Chat(props){
 
     useEffect(() => {
 
+        socket.connect()
+
         socket.on('msg', (data) => {
             const msgList = document.getElementById('messages')
             const msgItem = document.createElement('li')
