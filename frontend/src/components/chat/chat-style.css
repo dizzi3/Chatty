@@ -57,3 +57,10 @@ input{
 ul{
     list-style-type: none;
 }
+
+.userButton{
+    width: 70%;
+    height: 50px;
+    font-size: 19px;
+    margin-bottom: 15px;
+}

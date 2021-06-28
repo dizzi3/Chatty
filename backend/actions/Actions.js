@@ -49,10 +49,12 @@ class Actions{
         const content = req.body.content
         const fromUser = req.body.fromUser
         const userId = req.body.userId
+        const to = req.body.to
+        const date = req.body.date
 
         let msg
         try{
-            msg = new Message( { content, fromUser, userId })
+            msg = new Message( { content, fromUser, userId, to, date })
             await msg.save()
         }catch(error){
             return res.status(422).json( { message: error.message })

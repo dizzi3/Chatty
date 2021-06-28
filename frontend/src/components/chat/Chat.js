@@ -3,6 +3,7 @@ import './chat-style.css'
 import { useLocation } from 'react-router-dom'
 import axios from '../../axios'
 import { socket } from '../../services/socket'
+import dateHelper from '../../DateHelper'
 
 function Chat(props){
 
@@ -13,7 +14,10 @@ function Chat(props){
         socket.on('msg', (data) => {
             const msgList = document.getElementById('messages')
             const msgItem = document.createElement('li')
-            msgItem.textContent = '[' + data.username + ']: ' + data.msg
+
+            const dateString = dateHelper.getShortDateString(new Date(data.date))
+
+            msgItem.innerHTML = data.username + ' ' + dateString + "</br>" + data.msg
             msgList.appendChild(msgItem)
 
             scrollToTheBottomOfMsgList()
@@ -42,7 +46,13 @@ function Chat(props){
                     else
                         status = '<span style="color: red">offline</span>'
     
-                    userItem.innerHTML = '[' + user.username + '] is ' + status
+                    const buttonText = user.username + ' is ' + status
+
+                    const userButton = document.createElement('button')
+                    userButton.className = 'userButton'
+                    userButton.innerHTML = buttonText
+
+                    userItem.appendChild(userButton)
                     usersSection.appendChild(userItem)
 
                 }
@@ -78,15 +88,20 @@ function Chat(props){
         
         try{
 
+            let date = new Date().toISOString()
+
             socket.emit('msg', {
                 username: username,
-                msg: msg
+                msg: msg,
+                date: new Date().toISOString()
             })
 
             const res = await axios.post('/chat', {
                 content: msg,
                 fromUser: username,
-                userId: userId
+                userId: userId,
+                to: "all",
+                date: date
             })
 
 
