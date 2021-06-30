@@ -24,19 +24,10 @@ app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', router)
 
-function logMapElements(value, key, map) {
-    console.log(`map.get('${key}') = ${value}`)
-}
-
 io.on('connection', (socket) => {
-    console.log('user connected, socket id: ' + socket.id)
-    //console.log(socket.handshake)
 
     socket.on('disconnect', () => {
-        console.log('user ' + socket.id + ' disconnected')
-
         UserSocket.setOffline({ socketID: socket.id })
-        UserSocket.printSockets()
         
         io.sockets.emit('userStatusChanged', UserSocket.sockets)
     })
@@ -61,18 +52,11 @@ io.on('connection', (socket) => {
         socket.join(data.userID)
         socket.join('/')
 
-        //UserSocket.printSockets()
         io.sockets.emit('userStatusChanged', UserSocket.sockets)
     }) 
 
     socket.on('msg', (msg) => {
-        console.log(msg)
-        
-        //socket.to(msg.to).emit('msg', msg)
         io.sockets.in(msg.to).emit('msg', msg)
-
-        //socket.to(msg.to).allSockets.emit('msg', msg)
-        console.log('emitted')
     })
 
     socket.on("connect_error", (err) => {
@@ -80,7 +64,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('getMessages', (data) => {
-        console.log(data)
 
         if(data.roomType === 'private'){
 

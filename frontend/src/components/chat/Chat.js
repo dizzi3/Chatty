@@ -22,14 +22,8 @@ function Chat(props){
 
         socket.on('msg', (data) => {
 
-            if(data.to === currentRoom || data.fromUserId === currentRoom){
-                console.log('user ' + username + '      ' + data.to + ' === ' + currentRoom + ' || ' + 
-                            data.fromUserId + ' === ' + currentRoom)
+            if(data.to === currentRoom || data.fromUserId === currentRoom)
                 displayMessage(data)
-                
-            }else
-                console.log('user ' + username + '     ' + data.to + ' !== ' + currentRoom + 
-                            ' || ' + data.fromUserId + ' !== ' + currentRoom)
 
         })
 
@@ -45,38 +39,27 @@ function Chat(props){
         else
             status = '<span style="color: red">offline</span>'
 
-        const buttonText = user.username + ' is ' + status
+        const buttonText = user.username + ' ' + status
 
         const userButton = document.createElement('button')
         userButton.className = 'userButton'
+        userButton.innerHTML = buttonText
 
         userButton.setAttribute('data-userID', user.userID)
 
         userButton.onclick = () => {
 
-            new Promise((resolve, reject) => {
+            setRoomType('private')
+            setCurrentRoom(userButton.getAttribute('data-userID'))
 
-                setRoomType('private')
-                setCurrentRoom(userButton.getAttribute('data-userID'))
-
-                resolve()
-            }).then(() => {
-                console.log('switched to room ' + currentRoom + ' with ' + userButton.getAttribute('data-userID') + ' attribute')
-
-                socket.emit('getMessages', {
+            socket.emit('getMessages', {
             
-                    sender: userId,
-                    receiver: userButton.getAttribute('data-userID'),
-                    roomType: 'private'
-    
-                })
+                sender: userId,
+                receiver: userButton.getAttribute('data-userID'),
+                roomType: 'private'
+
             })
-
-            return false
-            
         }
-
-        userButton.innerHTML = buttonText
 
         userItem.appendChild(userButton)
         usersSection.appendChild(userItem)
@@ -101,10 +84,6 @@ function Chat(props){
     useEffect(() => {
         
         socket.connect()
-
-        socket.on('disconnect', () => {
-            console.log('user ' + username + ' disconnected')
-        })
 
         socket.on('userStatusChanged', (users) => {
 
@@ -154,18 +133,16 @@ function Chat(props){
     }
     
 
-    //TODO: MAKE AN IMPLEMENTATION TO FETCH ROOMS FROM SERVER AND PASS IT AS AN ARGUMENT TO THIS FUNCTION
     const createAllChatButton = () => {
         const usersSection = document.getElementById('users')
         const item = document.createElement('li')
                 
         let status = '<span style="color: green">online</span>'
 
-        const buttonText = 'All chat is ' + status
+        const buttonText = 'All chat ' + status
 
         const button = document.createElement('button')
 
-        //TODO: change class to room button mby? idk
         button.className = 'userButton'
         button.innerHTML = buttonText
         button.onclick = () => {
@@ -216,7 +193,7 @@ function Chat(props){
             if(roomType != 'room')
                 displayMessage(data)
 
-            const res = await axios.post('/chat', {
+            await axios.post('/chat', {
                 content: msg,
                 fromUser: username,
                 userId: userId,
