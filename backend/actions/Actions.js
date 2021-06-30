@@ -54,7 +54,7 @@ class Actions{
 
         let msg
         try{
-            msg = new Message( { content, fromUser, userId, to, date })
+            msg = new Message( { content, fromUser, userId, to, date})
             await msg.save()
         }catch(error){
             return res.status(422).json( { message: error.message })

@@ -17,16 +17,20 @@ const router = require('./routes/router')
 require('./database/mongoose')
 const cors = require('cors')
 const UserSocket = require('./UserSocket')
-const e = require('cors')
+const MessageModel = require('./database/models/MessageModel')
 
 app.use(cors())
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', router)
 
+function logMapElements(value, key, map) {
+    console.log(`map.get('${key}') = ${value}`)
+}
+
 io.on('connection', (socket) => {
     console.log('user connected, socket id: ' + socket.id)
-    console.log(socket.handshake)
+    //console.log(socket.handshake)
 
     socket.on('disconnect', () => {
         console.log('user ' + socket.id + ' disconnected')
@@ -38,7 +42,6 @@ io.on('connection', (socket) => {
     })
 
     socket.on('userConnected', (data) => {
-        console.log(data, ' socket id: ' + socket.id)
 
         let socketUser = UserSocket.sockets.find( ({ userID }) => userID === data.userID)
 
@@ -54,18 +57,62 @@ io.on('connection', (socket) => {
             socketUser.socketID = socket.id
         }
 
-        UserSocket.printSockets()
+        socket.leave(socket.id)
+        socket.join(data.userID)
+        socket.join('/')
+
+        //UserSocket.printSockets()
         io.sockets.emit('userStatusChanged', UserSocket.sockets)
     }) 
 
     socket.on('msg', (msg) => {
-        io.sockets.emit('msg', msg)
+        console.log(msg)
+        
+        //socket.to(msg.to).emit('msg', msg)
+        io.sockets.in(msg.to).emit('msg', msg)
+
+        //socket.to(msg.to).allSockets.emit('msg', msg)
         console.log('emitted')
     })
 
     socket.on("connect_error", (err) => {
         console.log(`connect_error due to ${err.message}`);
     });
+
+    socket.on('getMessages', (data) => {
+        console.log(data)
+
+        if(data.roomType === 'private'){
+
+            sender = data.sender
+            receiver = data.receiver
+
+            MessageModel.find({ $or:[ 
+                {$and:[ { 'to': receiver }, { 'userId': sender } ]},
+                {$and:[ { 'to': sender }, { 'userId': receiver } ]} ] },
+                 (err, messages) => {
+
+                if(err)
+                    return
+
+                socket.emit('updateMessages', messages)
+            })
+
+
+
+        }else{
+            to = data.to
+            MessageModel.find({ 'to' : to }, (err, messages) => {
+
+                if(err)
+                    return
+
+                socket.emit('updateMessages', messages)
+            })
+        }
+
+    })
+
 })
 
 server.listen(config.port, () => {

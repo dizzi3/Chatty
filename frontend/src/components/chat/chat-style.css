@@ -64,3 +64,9 @@ ul{
     font-size: 19px;
     margin-bottom: 15px;
 }
+
+.dateStyle{
+    color: white;
+    font-weight: bold;
+    font-style: italic;
+}

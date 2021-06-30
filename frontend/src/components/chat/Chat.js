@@ -4,24 +4,103 @@ import { useLocation } from 'react-router-dom'
 import axios from '../../axios'
 import { socket } from '../../services/socket'
 import dateHelper from '../../DateHelper'
+import { ALL_CHAT_NAME } from '../../config'
 
 function Chat(props){
 
+    const location = useLocation()
+    const username = location.state.username
+    const userId = location.state.userId
+
+    const [msg, setMsg] = useState('')
+    const [currentRoom, setCurrentRoom] = useState(ALL_CHAT_NAME)
+    const [roomType, setRoomType] = useState('room')
+
     useEffect(() => {
 
-        socket.connect()
+        socket.off('msg')
 
         socket.on('msg', (data) => {
-            const msgList = document.getElementById('messages')
-            const msgItem = document.createElement('li')
 
-            const dateString = dateHelper.getShortDateString(new Date(data.date))
+            if(data.to === currentRoom || data.fromUserId === currentRoom){
+                console.log('user ' + username + '      ' + data.to + ' === ' + currentRoom + ' || ' + 
+                            data.fromUserId + ' === ' + currentRoom)
+                displayMessage(data)
+                
+            }else
+                console.log('user ' + username + '     ' + data.to + ' !== ' + currentRoom + 
+                            ' || ' + data.fromUserId + ' !== ' + currentRoom)
 
-            msgItem.innerHTML = data.username + ' ' + dateString + "</br>" + data.msg
-            msgList.appendChild(msgItem)
-
-            scrollToTheBottomOfMsgList()
         })
+
+    }, [currentRoom])
+
+    const createUserButton = (user) => {
+        const usersSection = document.getElementById('users')
+        const userItem = document.createElement('li')
+                
+        let status = ''
+        if(user.online)
+            status = '<span style="color: green">online</span>'
+        else
+            status = '<span style="color: red">offline</span>'
+
+        const buttonText = user.username + ' is ' + status
+
+        const userButton = document.createElement('button')
+        userButton.className = 'userButton'
+
+        userButton.setAttribute('data-userID', user.userID)
+
+        userButton.onclick = () => {
+
+            new Promise((resolve, reject) => {
+
+                setRoomType('private')
+                setCurrentRoom(userButton.getAttribute('data-userID'))
+
+                resolve()
+            }).then(() => {
+                console.log('switched to room ' + currentRoom + ' with ' + userButton.getAttribute('data-userID') + ' attribute')
+
+                socket.emit('getMessages', {
+            
+                    sender: userId,
+                    receiver: userButton.getAttribute('data-userID'),
+                    roomType: 'private'
+    
+                })
+            })
+
+            return false
+            
+        }
+
+        userButton.innerHTML = buttonText
+
+        userItem.appendChild(userButton)
+        usersSection.appendChild(userItem)
+    }
+
+    const displayMessage = (data) => {
+
+        const msgList = document.getElementById('messages')
+
+        const msgItem = document.createElement('li')
+
+        const dateString = dateHelper.getShortDateString(new Date(data.date))
+
+        msgItem.innerHTML = '<span style="font-weight: bold;">' + data.fromUser + 
+                            '</span> <span class="dateStyle">' + dateString + '</span></br>' + data.content
+
+        msgList.appendChild(msgItem)
+
+        scrollToTheBottomOfMsgList()
+    }
+
+    useEffect(() => {
+        
+        socket.connect()
 
         socket.on('disconnect', () => {
             console.log('user ' + username + ' disconnected')
@@ -31,31 +110,13 @@ function Chat(props){
 
             const usersSection = document.getElementById('users')
             usersSection.innerHTML = ''
-            
-            console.log(users)
+
+            createAllChatButton()
 
             users.forEach((user, index) => {
 
-                if(!(user.username === username)){
-
-                    const userItem = document.createElement('li')
-                
-                    let status = ''
-                    if(user.online)
-                        status = "<span style='color: green'>online</span>"
-                    else
-                        status = '<span style="color: red">offline</span>'
-    
-                    const buttonText = user.username + ' is ' + status
-
-                    const userButton = document.createElement('button')
-                    userButton.className = 'userButton'
-                    userButton.innerHTML = buttonText
-
-                    userItem.appendChild(userButton)
-                    usersSection.appendChild(userItem)
-
-                }
+                if(!(user.username === username))
+                    createUserButton(user)
                 
             })
         })
@@ -65,14 +126,65 @@ function Chat(props){
             userID: location.state.userId
         })
 
+        socket.on('updateMessages', (messages) => {
+
+            const msgList = document.getElementById('messages')
+            msgList.innerHTML = ''
+
+            messages.forEach((message, index) => {
+                
+                displayMessage(message)
+
+            })
+
+        })
+
+        initializeChatMessages()  
+        createAllChatButton() 
+
     }, [] )
 
+    const initializeChatMessages = () => {
+        socket.emit('getMessages', {
 
-    const location = useLocation()
-    const username = location.state.username
-    const userId = location.state.userId
+            to: ALL_CHAT_NAME,
+            roomType: 'room'
 
-    const [msg, setMsg] = useState('')
+        })
+    }
+    
+
+    //TODO: MAKE AN IMPLEMENTATION TO FETCH ROOMS FROM SERVER AND PASS IT AS AN ARGUMENT TO THIS FUNCTION
+    const createAllChatButton = () => {
+        const usersSection = document.getElementById('users')
+        const item = document.createElement('li')
+                
+        let status = '<span style="color: green">online</span>'
+
+        const buttonText = 'All chat is ' + status
+
+        const button = document.createElement('button')
+
+        //TODO: change class to room button mby? idk
+        button.className = 'userButton'
+        button.innerHTML = buttonText
+        button.onclick = () => {
+            setCurrentRoom(ALL_CHAT_NAME)
+            setRoomType('room')
+
+            socket.emit('getMessages', {
+
+                to: ALL_CHAT_NAME,
+                roomType: 'room'
+
+            })
+
+            return false
+        }
+
+        item.appendChild(button)
+        usersSection.appendChild(item)
+    }
 
     const changeMsgHandler = (event) => {
         const value = event.target.value
@@ -90,17 +202,25 @@ function Chat(props){
 
             let date = new Date().toISOString()
 
-            socket.emit('msg', {
-                username: username,
-                msg: msg,
-                date: new Date().toISOString()
-            })
+            const data = {
+                fromUser: username,
+                content: msg,
+                date: new Date().toISOString(),
+                to: currentRoom,
+                roomType: roomType,
+                fromUserId: userId
+            }
+
+            socket.emit('msg', data)
+
+            if(roomType != 'room')
+                displayMessage(data)
 
             const res = await axios.post('/chat', {
                 content: msg,
                 fromUser: username,
                 userId: userId,
-                to: "all",
+                to: currentRoom,
                 date: date
             })
 
@@ -129,7 +249,7 @@ function Chat(props){
 
                 <br></br>
 
-                <button onClick={ () => OnSendMessage() }>Send</button>
+                <button onClick={ OnSendMessage }>Send</button>
 
             </div>
 
