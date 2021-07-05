@@ -75,15 +75,15 @@ function Chat(props){
         const usersSection = document.getElementById('users')
         const userItem = document.createElement('li')
                 
-        let status = ''
+        let dot
         if(user.online)
-            status = '<span style="color: green">online</span>'
+            dot = '<span class="onlineDot"></span>'
         else
-            status = '<span style="color: red">offline</span>'
+            dot = '<span class="offlineDot"></span>'
 
         const iconElement = '<span style="white-space: pre;">  </span><span id="newMsgIcon" class="msgIcon"></span>'
 
-        const buttonText = user.username + ' ' + status + iconElement
+        const buttonText = dot + '<span style="white-space: pre;">  </span>' + user.username + iconElement
 
         const userButton = document.createElement('button')
         userButton.className = 'userButton'
@@ -130,8 +130,11 @@ function Chat(props){
 
         const dateString = dateHelper.getDateString(new Date(data.date))
 
-        msgItem.innerHTML = '<span style="font-weight: bold;">' + data.fromUser + 
-                            '</span> <span class="dateStyle">' + dateString + '</span></br>' + data.content
+        msgItem.innerHTML = '<span class="msgFromUser">' + data.fromUser + 
+                            '</span> <span class="dateStyle">' + dateString + 
+                            '</span></br><span class="msgContent">' + data.content + 
+                            '</span>'
+
 
         msgList.appendChild(msgItem)
 
@@ -199,9 +202,9 @@ function Chat(props){
         const usersSection = document.getElementById('users')
         const item = document.createElement('li')
                 
-        let status = '<span style="color: green">online</span>'
+        const dot = '<span class="onlineDot"></span>'
 
-        const buttonText = 'All chat ' + status
+        const buttonText = dot + '<span style="white-space: pre;">  </span>All chat'
 
         const button = document.createElement('button')
 
@@ -293,19 +296,29 @@ function Chat(props){
 
     return (
 
-        <div className="chatStyle">
+        <div class="chatStyle">
+
+            <div id="logo">
+                CHATTY
+            </div>
 
             <div id="chatSection">
 
-                <ul id="messages"></ul>
+                <div class="messagesOuterBox">
+                    <ul id="messages">
+                        
+                    </ul>
+                </div>
 
                 <input type="text" 
                         value={msg}
-                        onChange={changeMsgHandler}></input>
+                        onChange={changeMsgHandler}
+                        class="msgInput"></input>
 
                 <br></br>
 
-                <button onClick={ OnSendMessage }>Send</button>
+                <button onClick={ OnSendMessage }
+                        class="sendMsgButton">Send</button>
 
             </div>
 
