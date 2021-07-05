@@ -128,7 +128,7 @@ function Chat(props){
 
         const msgItem = document.createElement('li')
 
-        const dateString = dateHelper.getShortDateString(new Date(data.date))
+        const dateString = dateHelper.getDateString(new Date(data.date))
 
         msgItem.innerHTML = '<span style="font-weight: bold;">' + data.fromUser + 
                             '</span> <span class="dateStyle">' + dateString + '</span></br>' + data.content
