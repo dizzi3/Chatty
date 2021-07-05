@@ -5,6 +5,8 @@ import axios from '../../axios'
 import { socket } from '../../services/socket'
 import dateHelper from '../../DateHelper'
 import { ALL_CHAT_NAME } from '../../config'
+import { RiMessage2Fill } from 'react-icons/ri'
+import ReactDom from 'react-dom'
 
 function Chat(props){
 
@@ -21,15 +23,55 @@ function Chat(props){
         socket.off('msg')
 
         socket.on('msg', (data) => {
+            
+            if((data.roomType === 'room' && data.to === currentRoom) ||
+               (data.roomType === 'private' && data.fromUserId === currentRoom )){
 
-            if(data.to === currentRoom || data.fromUserId === currentRoom)
                 displayMessage(data)
+
+                let from
+                if(data.roomType === 'private')
+                    from = data.fromUserId
+                else
+                    from = data.to
+
+                socket.emit('removeNewMsgFrom', {
+                    userID: userId,
+                    from: from
+                })
+
+            }
+            else
+                setNewMessageIcon(data)
 
         })
 
     }, [currentRoom])
 
-    const createUserButton = (user) => {
+    const setNewMessageIcon = (data) => {
+
+        const users = document.getElementById('users').children
+        for(let i = 0; i < users.length; i++){
+
+            const userButton = users[i].firstChild
+
+            let from
+            if(data.roomType === 'private')
+                from = data.fromUserId
+            else
+                from = data.to
+
+            if(userButton.getAttribute('data-userID') === from){
+                const msgDiv = userButton.children['newMsgIcon']
+                ReactDom.render(<RiMessage2Fill/>, msgDiv)
+            }
+
+        }
+        
+
+    }
+
+    const createUserButton = (user, thisUser) => {
         const usersSection = document.getElementById('users')
         const userItem = document.createElement('li')
                 
@@ -39,11 +81,18 @@ function Chat(props){
         else
             status = '<span style="color: red">offline</span>'
 
-        const buttonText = user.username + ' ' + status
+        const iconElement = '<span style="white-space: pre;">  </span><span id="newMsgIcon" class="msgIcon"></span>'
+
+        const buttonText = user.username + ' ' + status + iconElement
 
         const userButton = document.createElement('button')
         userButton.className = 'userButton'
         userButton.innerHTML = buttonText
+
+        if(thisUser.newMsgFrom.includes(user.userID)){
+            const msgDiv = userButton.children['newMsgIcon']
+            ReactDom.render(<RiMessage2Fill/>, msgDiv)
+        }
 
         userButton.setAttribute('data-userID', user.userID)
 
@@ -59,6 +108,14 @@ function Chat(props){
                 roomType: 'private'
 
             })
+
+            socket.emit('removeNewMsgFrom', {
+                userID: userId,
+                from: userButton.getAttribute('data-userID')
+            })
+
+            const msgDiv = userButton.children['newMsgIcon']
+            msgDiv.innerHTML = ''
         }
 
         userItem.appendChild(userButton)
@@ -90,19 +147,20 @@ function Chat(props){
             const usersSection = document.getElementById('users')
             usersSection.innerHTML = ''
 
-            createAllChatButton()
+            let thisUser
+            users.forEach((user, index) => {
+                if(user.username === username)
+                    thisUser = user
+            })
+
+            createAllChatButton(thisUser)
 
             users.forEach((user, index) => {
 
                 if(!(user.username === username))
-                    createUserButton(user)
+                    createUserButton(user, thisUser)
                 
             })
-        })
-
-        socket.emit('userConnected', {
-            username: location.state.username,
-            userID: location.state.userId
         })
 
         socket.on('updateMessages', (messages) => {
@@ -118,8 +176,12 @@ function Chat(props){
 
         })
 
+        socket.emit('userConnected', {
+            username: location.state.username,
+            userID: location.state.userId
+        })
+
         initializeChatMessages()  
-        createAllChatButton() 
 
     }, [] )
 
@@ -133,7 +195,7 @@ function Chat(props){
     }
     
 
-    const createAllChatButton = () => {
+    const createAllChatButton = (user) => {
         const usersSection = document.getElementById('users')
         const item = document.createElement('li')
                 
@@ -144,7 +206,17 @@ function Chat(props){
         const button = document.createElement('button')
 
         button.className = 'userButton'
-        button.innerHTML = buttonText
+
+        const iconElement = '<span style="white-space: pre;">  </span><span id="newMsgIcon" class="msgIcon"></span>'
+        button.innerHTML = buttonText + iconElement
+
+        if(user.newMsgFrom.includes(ALL_CHAT_NAME)){
+            const msgDiv = button.children['newMsgIcon']
+            ReactDom.render(<RiMessage2Fill/>, msgDiv)
+        }
+
+        button.setAttribute('data-userID', ALL_CHAT_NAME)
+
         button.onclick = () => {
             setCurrentRoom(ALL_CHAT_NAME)
             setRoomType('room')
@@ -156,7 +228,14 @@ function Chat(props){
 
             })
 
-            return false
+            socket.emit('removeNewMsgFrom', {
+                userID: userId,
+                from: button.getAttribute('data-userID')
+            })
+
+            const msgDiv = button.children['newMsgIcon']
+            msgDiv.innerHTML = ''
+            
         }
 
         item.appendChild(button)
@@ -190,7 +269,7 @@ function Chat(props){
 
             socket.emit('msg', data)
 
-            if(roomType != 'room')
+            if(roomType !== 'room')
                 displayMessage(data)
 
             await axios.post('/chat', {
@@ -230,9 +309,8 @@ function Chat(props){
 
             </div>
 
-            <div id="usersSection"> 
-
-                <ul id="users">
+            <div id="usersSection">
+                <ul id="users"> 
 
                 </ul>
 

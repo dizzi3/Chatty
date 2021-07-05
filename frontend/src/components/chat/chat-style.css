@@ -70,3 +70,7 @@ ul{
     font-weight: bold;
     font-style: italic;
 }
+
+.msgIcon{
+    color: red;
+}

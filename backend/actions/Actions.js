@@ -34,7 +34,7 @@ class Actions{
                 return res.status(422).json({ message: error.message })
 
             if(user === null)
-            return res.status(422).json({ message: "user does not exist in the database!"})
+                return res.status(422).json({ message: "user does not exist in the database!"})
 
             res.status(200).json({ 
                 _id: user._id,

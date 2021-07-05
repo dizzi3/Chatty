@@ -18,6 +18,7 @@ require('./database/mongoose')
 const cors = require('cors')
 const UserSocket = require('./UserSocket')
 const MessageModel = require('./database/models/MessageModel')
+const User = require('./database/models/UserModel')
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -27,26 +28,42 @@ app.use('/', router)
 io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
-        UserSocket.setOffline({ socketID: socket.id })
+
+        //TODO: UNCOMMENT!!
+        //UserSocket.setOffline({ socketID: socket.id })
         
         io.sockets.emit('userStatusChanged', UserSocket.sockets)
     })
 
-    socket.on('userConnected', (data) => {
-
+    socket.on('userConnected', async (data) => {
+        
         let socketUser = UserSocket.sockets.find( ({ userID }) => userID === data.userID)
-
+        
         if(socketUser === undefined){
-            UserSocket.addSocket(new UserSocket({
+
+            socketUser = new UserSocket({
                 socketID: socket.id,
                 username: data.username,
                 userID: data.userID,
                 online: true
-            }))
+            })
+
+            UserSocket.addSocket(socketUser)
+
         }else{
             socketUser.online = true
             socketUser.socketID = socket.id
         }
+
+        await User.findOne({ _id: data.userID  }, function(err, user){
+
+            if(!err){
+
+                for(let i = 0; i < user.newMsgFrom.length; i++)
+                    socketUser.newMsgFrom.push(user.newMsgFrom[i])
+            }
+
+        })
 
         socket.leave(socket.id)
         socket.join(data.userID)
@@ -55,8 +72,62 @@ io.on('connection', (socket) => {
         io.sockets.emit('userStatusChanged', UserSocket.sockets)
     }) 
 
-    socket.on('msg', (msg) => {
+    socket.on('msg', async (msg) => {
+
+        if(msg.roomType === 'private'){
+            
+            const toUser = UserSocket.findSocketByUserID(msg.to)
+
+            if(toUser.newMsgFrom.indexOf(msg.fromUserId) === -1)
+                toUser.newMsgFrom.push(msg.fromUserId)
+
+            User.findOneAndUpdate( { _id: msg.to }, {
+                $addToSet: {
+                    newMsgFrom: msg.fromUserId
+                }
+            }, function(error, success){})
+
+        }else{
+
+            const socketsIDs = io.sockets.in(msg.to).adapter.sids
+            socketsIDs.forEach(function(value, key){
+                const socketID = key
+
+                const user = UserSocket.findSocket({ 'socketID' : socketID })
+
+                if(user && user.userID !== msg.fromUserId){
+                    
+                    if(user.newMsgFrom.indexOf(msg.to) === -1)
+                        user.newMsgFrom.push(msg.to)
+
+                    User.findOneAndUpdate( { _id: user.userID }, {
+                        $addToSet: {
+                            newMsgFrom: msg.to
+                        }
+                    }, function(error, success){})
+
+                }
+            })
+
+        }
+
         io.sockets.in(msg.to).emit('msg', msg)
+    })
+
+    socket.on('removeNewMsgFrom', (data) => {
+
+        const userSocket = UserSocket.findSocketByUserID(data.userID)
+
+        userSocket.newMsgFrom = userSocket.newMsgFrom.filter(from => from !== data.from)
+
+        User.findOneAndUpdate({ _id: data.userID }, {
+
+            $pull: {
+                newMsgFrom: data.from
+            }
+
+        }, function(error, success) {} )
+
     })
 
     socket.on("connect_error", (err) => {

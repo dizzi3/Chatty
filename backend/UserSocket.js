@@ -4,6 +4,7 @@ class UserSocket{
     username = ''
     userID = ''
     online = false
+    newMsgFrom = []
 
     static sockets = []
 
@@ -26,6 +27,10 @@ class UserSocket{
 
     static findSocket(data){
         return UserSocket.sockets.find( ({ socketID }) => socketID === data.socketID)
+    }
+
+    static findSocketByUserID(id){
+        return UserSocket.sockets.find( ({userID}) =>  userID === id)
     }
 
     static addSocket(socket){
