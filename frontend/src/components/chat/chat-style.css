@@ -80,11 +80,11 @@ ul{
     font-family: 'Ubuntu', sans-serif;
     border-radius: 10px;
     border-style: none;
-    background-color: #c9ddff;
+    background-color: #d7f0ed;
 }
 
 .userButton:hover{
-    background-color: #b0cdff;
+    background-color: #b3d9ff;
     cursor: pointer;
 }
 
@@ -146,14 +146,14 @@ ul{
     padding-top: 5px;
     padding-bottom: 5px;
     font-size: 17px;
-    background-color: #c9ddff;
+    background-color: #d7f0ed;
     border-style: none;
     border-radius: 5px;
     font-family: 'Ubuntu', sans-serif;
 }
 
 .sendMsgButton:hover{
-    background-color: #b0cdff;
+    background-color: #b3d9ff;
     cursor: pointer;
 }
 
@@ -164,5 +164,12 @@ ul{
     border-style: none;
     padding: 5px;
     font-family: 'Ubuntu', sans-serif;
-    background-color: #b0cdff;
+    background-color: #d7f0ed;
+    border: 2px solid #d7f0ed;
+}
+
+.msgInput:focus{
+    outline: none;
+    border: 2px solid #8fb8ff;
+    border-radius: 5px;
 }
