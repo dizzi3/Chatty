@@ -49,7 +49,7 @@ function Chat(props){
 
         })
 
-    }, [currentRoom])
+    }, [currentRoom, userId]) 
 
     const setNewMessageIcon = (data) => {
 
@@ -72,57 +72,6 @@ function Chat(props){
         }
         
 
-    }
-
-    const createUserButton = (user, thisUser) => {
-        const usersSection = document.getElementById('users')
-        const userItem = document.createElement('li')
-                
-        let dot
-        if(user.online)
-            dot = '<span class="onlineDot"></span>'
-        else
-            dot = '<span class="offlineDot"></span>'
-
-        const iconElement = '<span style="white-space: pre;">  </span><span id="newMsgIcon" class="msgIcon"></span>'
-
-        const buttonText = dot + '<span style="white-space: pre;">  </span>' + user.username + iconElement
-
-        const userButton = document.createElement('button')
-        userButton.className = 'userButton'
-        userButton.innerHTML = buttonText
-
-        if(thisUser.newMsgFrom.includes(user.userID)){
-            const msgDiv = userButton.children['newMsgIcon']
-            ReactDom.render(<RiMessage2Fill/>, msgDiv)
-        }
-
-        userButton.setAttribute('data-userID', user.userID)
-
-        userButton.onclick = () => {
-
-            setRoomType('private')
-            setCurrentRoom(userButton.getAttribute('data-userID'))
-
-            socket.emit('getMessages', {
-            
-                sender: userId,
-                receiver: userButton.getAttribute('data-userID'),
-                roomType: 'private'
-
-            })
-
-            socket.emit('removeNewMsgFrom', {
-                userID: userId,
-                from: userButton.getAttribute('data-userID')
-            })
-
-            const msgDiv = userButton.children['newMsgIcon']
-            msgDiv.innerHTML = ''
-        }
-
-        userItem.appendChild(userButton)
-        usersSection.appendChild(userItem)
     }
 
     const displayMessage = (data) => {
@@ -149,7 +98,6 @@ function Chat(props){
         var input = document.getElementById('messageInput')
 
         input.addEventListener('keyup', (event) => {
-            console.log('key: ' + event.key)
 
             if(event.key === 'Enter'){
                 event.preventDefault()
@@ -164,6 +112,104 @@ function Chat(props){
     useEffect(() => {
         
         socket.connect()
+
+        const createAllChatButton = (user) => {
+            const usersSection = document.getElementById('users')
+            const item = document.createElement('li')
+                    
+            const dot = '<span class="onlineDot"></span>'
+    
+            const buttonText = dot + '<span style="white-space: pre;">  </span>All chat'
+    
+            const button = document.createElement('button')
+    
+            button.className = 'userButton'
+    
+            const iconElement = '<span style="white-space: pre;">  </span><span id="newMsgIcon" class="msgIcon"></span>'
+            button.innerHTML = buttonText + iconElement
+    
+            if(user.newMsgFrom.includes(ALL_CHAT_NAME)){
+                const msgDiv = button.children['newMsgIcon']
+                ReactDom.render(<RiMessage2Fill/>, msgDiv)
+            }
+    
+            button.setAttribute('data-userID', ALL_CHAT_NAME)
+    
+            button.onclick = () => {
+                setCurrentRoom(ALL_CHAT_NAME)
+                setRoomType('room')
+    
+                socket.emit('getMessages', {
+    
+                    to: ALL_CHAT_NAME,
+                    roomType: 'room'
+    
+                })
+    
+                socket.emit('removeNewMsgFrom', {
+                    userID: userId,
+                    from: button.getAttribute('data-userID')
+                })
+    
+                const msgDiv = button.children['newMsgIcon']
+                msgDiv.innerHTML = ''
+                
+            }
+    
+            item.appendChild(button)
+            usersSection.appendChild(item)
+        }
+
+        const createUserButton = (user, thisUser) => {
+            const usersSection = document.getElementById('users')
+            const userItem = document.createElement('li')
+                    
+            let dot
+            if(user.online)
+                dot = '<span class="onlineDot"></span>'
+            else
+                dot = '<span class="offlineDot"></span>'
+    
+            const iconElement = '<span style="white-space: pre;">  </span><span id="newMsgIcon" class="msgIcon"></span>'
+    
+            const buttonText = dot + '<span style="white-space: pre;">  </span>' + user.username + iconElement
+    
+            const userButton = document.createElement('button')
+            userButton.className = 'userButton'
+            userButton.innerHTML = buttonText
+    
+            if(thisUser.newMsgFrom.includes(user.userID)){
+                const msgDiv = userButton.children['newMsgIcon']
+                ReactDom.render(<RiMessage2Fill/>, msgDiv)
+            }
+    
+            userButton.setAttribute('data-userID', user.userID)
+    
+            userButton.onclick = () => {
+    
+                setRoomType('private')
+                setCurrentRoom(userButton.getAttribute('data-userID'))
+    
+                socket.emit('getMessages', {
+                
+                    sender: userId,
+                    receiver: userButton.getAttribute('data-userID'),
+                    roomType: 'private'
+    
+                })
+    
+                socket.emit('removeNewMsgFrom', {
+                    userID: userId,
+                    from: userButton.getAttribute('data-userID')
+                })
+    
+                const msgDiv = userButton.children['newMsgIcon']
+                msgDiv.innerHTML = ''
+            }
+    
+            userItem.appendChild(userButton)
+            usersSection.appendChild(userItem)
+        }
 
         socket.on('userStatusChanged', (users) => {
 
@@ -200,14 +246,14 @@ function Chat(props){
         })
 
         socket.emit('userConnected', {
-            username: location.state.username,
-            userID: location.state.userId
+            username: username,
+            userID: userId
         })
 
         initializeChatMessages()  
         setAutoSendMsgOnEnterEvent()
 
-    }, [] )
+    }, [userId, username] ) 
 
     const initializeChatMessages = () => {
         socket.emit('getMessages', {
@@ -217,59 +263,10 @@ function Chat(props){
 
         })
     }
-    
-
-    const createAllChatButton = (user) => {
-        const usersSection = document.getElementById('users')
-        const item = document.createElement('li')
-                
-        const dot = '<span class="onlineDot"></span>'
-
-        const buttonText = dot + '<span style="white-space: pre;">  </span>All chat'
-
-        const button = document.createElement('button')
-
-        button.className = 'userButton'
-
-        const iconElement = '<span style="white-space: pre;">  </span><span id="newMsgIcon" class="msgIcon"></span>'
-        button.innerHTML = buttonText + iconElement
-
-        if(user.newMsgFrom.includes(ALL_CHAT_NAME)){
-            const msgDiv = button.children['newMsgIcon']
-            ReactDom.render(<RiMessage2Fill/>, msgDiv)
-        }
-
-        button.setAttribute('data-userID', ALL_CHAT_NAME)
-
-        button.onclick = () => {
-            setCurrentRoom(ALL_CHAT_NAME)
-            setRoomType('room')
-
-            socket.emit('getMessages', {
-
-                to: ALL_CHAT_NAME,
-                roomType: 'room'
-
-            })
-
-            socket.emit('removeNewMsgFrom', {
-                userID: userId,
-                from: button.getAttribute('data-userID')
-            })
-
-            const msgDiv = button.children['newMsgIcon']
-            msgDiv.innerHTML = ''
-            
-        }
-
-        item.appendChild(button)
-        usersSection.appendChild(item)
-    }
 
     const changeMsgHandler = (event) => {
         const value = event.target.value
         setMsg(value)
-        console.log('set to ' + value)
     }
 
     const OnSendMessage = async () => {
@@ -316,7 +313,7 @@ function Chat(props){
 
     return (
 
-        <div class="chatStyle">
+        <div className="chatStyle">
 
             <div id="logo">
                 CHATTY
@@ -324,7 +321,7 @@ function Chat(props){
 
             <div id="chatSection">
 
-                <div class="messagesOuterBox">
+                <div className="messagesOuterBox">
                     
                     <Scrollbars ref={scrollbar}
                     renderTrackHorizontal={props => <div {...props} className="track-horizontal" style={{display:"none"}}/>}
@@ -340,13 +337,13 @@ function Chat(props){
                 <input type="text" 
                         value={msg}
                         onChange={changeMsgHandler}
-                        class="msgInput"
+                        className="msgInput"
                         id='messageInput'></input>
 
                 <br></br>
 
                 <button onClick={ OnSendMessage }
-                        class="sendMsgButton"
+                        className="sendMsgButton"
                         id="sendButton">Send</button>
 
             </div>

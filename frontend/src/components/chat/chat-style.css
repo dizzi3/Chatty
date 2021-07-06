@@ -77,7 +77,7 @@ ul{
     padding: 10px;
     padding-left: 20px;
     padding-right: 20px;
-    font-family: 'Encode Sans SC', sans-serif;
+    font-family: 'Ubuntu', sans-serif;
     border-radius: 10px;
     border-style: none;
     background-color: #c9ddff;
@@ -149,6 +149,7 @@ ul{
     background-color: #c9ddff;
     border-style: none;
     border-radius: 5px;
+    font-family: 'Ubuntu', sans-serif;
 }
 
 .sendMsgButton:hover{
@@ -159,4 +160,9 @@ ul{
 .msgInput{
     font-size: 17px;
     margin-top: 10px;
+    border-radius: 5px;
+    border-style: none;
+    padding: 5px;
+    font-family: 'Ubuntu', sans-serif;
+    background-color: #b0cdff;
 }
