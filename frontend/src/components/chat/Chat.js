@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './chat-style.css'
 import { useLocation } from 'react-router-dom'
 import axios from '../../axios'
@@ -7,6 +7,7 @@ import dateHelper from '../../DateHelper'
 import { ALL_CHAT_NAME } from '../../config'
 import { RiMessage2Fill } from 'react-icons/ri'
 import ReactDom from 'react-dom'
+import { Scrollbars } from 'react-custom-scrollbars'
 
 function Chat(props){
 
@@ -18,16 +19,18 @@ function Chat(props){
     const [currentRoom, setCurrentRoom] = useState(ALL_CHAT_NAME)
     const [roomType, setRoomType] = useState('room')
 
+    const scrollbar = useRef(null)
+
     useEffect(() => {
 
         socket.off('msg')
 
-        socket.on('msg', (data) => {
+        socket.on('msg', async (data) => {
             
             if((data.roomType === 'room' && data.to === currentRoom) ||
                (data.roomType === 'private' && data.fromUserId === currentRoom )){
 
-                displayMessage(data)
+                await displayMessage(data)
 
                 let from
                 if(data.roomType === 'private')
@@ -138,7 +141,24 @@ function Chat(props){
 
         msgList.appendChild(msgItem)
 
-        scrollToTheBottomOfMsgList()
+        if(scrollbar)
+            scrollbar.current.scrollToBottom()
+    }
+
+    const setAutoSendMsgOnEnterEvent = () => {
+        var input = document.getElementById('messageInput')
+
+        input.addEventListener('keyup', (event) => {
+            console.log('key: ' + event.key)
+
+            if(event.key === 'Enter'){
+                event.preventDefault()
+
+                document.getElementById('sendButton').click()
+                input.value = ''
+                setMsg('')
+            }
+        })
     }
 
     useEffect(() => {
@@ -185,6 +205,7 @@ function Chat(props){
         })
 
         initializeChatMessages()  
+        setAutoSendMsgOnEnterEvent()
 
     }, [] )
 
@@ -248,15 +269,14 @@ function Chat(props){
     const changeMsgHandler = (event) => {
         const value = event.target.value
         setMsg(value)
-    }
-
-    const scrollToTheBottomOfMsgList = () => {
-        const msgList = document.getElementById('messages')
-        msgList.scrollTo(0, msgList.scrollHeight)  
+        console.log('set to ' + value)
     }
 
     const OnSendMessage = async () => {
         
+        if(msg === '')
+            return
+
         try{
 
             let date = new Date().toISOString()
@@ -305,20 +325,29 @@ function Chat(props){
             <div id="chatSection">
 
                 <div class="messagesOuterBox">
-                    <ul id="messages">
+                    
+                    <Scrollbars ref={scrollbar}
+                    renderTrackHorizontal={props => <div {...props} className="track-horizontal" style={{display:"none"}}/>}
+                    renderThumbHorizontal={props => <div {...props} className="thumb-horizontal" style={{display:"none"}}/>}
+                     style={{ width: 970, height: 690 }}>
+                        <ul id="messages">
                         
-                    </ul>
+                        </ul>
+                    </Scrollbars>
+                    
                 </div>
 
                 <input type="text" 
                         value={msg}
                         onChange={changeMsgHandler}
-                        class="msgInput"></input>
+                        class="msgInput"
+                        id='messageInput'></input>
 
                 <br></br>
 
                 <button onClick={ OnSendMessage }
-                        class="sendMsgButton">Send</button>
+                        class="sendMsgButton"
+                        id="sendButton">Send</button>
 
             </div>
 
