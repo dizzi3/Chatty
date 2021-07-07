@@ -26,8 +26,37 @@ body{
     height: 60px;
 }
 
-input{
+#usersSection{
+    float: left;
+    width: var(--users-section-symmetrical-width, 300px);
+    height: 650px;
+    padding-right: 30px;
+}
+
+.userButton{
+    width: 80%;
+    height: 50px;
+    font-size: 19px;
     margin-bottom: 15px;
+    text-align: left;
+    padding: 10px;
+    padding-left: 20px;
+    font-family: 'Ubuntu', sans-serif;
+    border-radius: 10px;
+    border-style: none;
+    background-color: #d7f0ed;
+}
+
+.userButton:hover{
+    background-color: #b3d9ff;
+    cursor: pointer;
+}
+
+#chatSection{
+    float: left;
+    width: 1000px;
+    height: 100%;
+    /*margin-left: var(--chat-section-symmetrical-margin, 200px);*/
 }
 
 .messagesOuterBox{
@@ -58,41 +87,8 @@ input{
     color: black;
 }
 
-#chatSection{
-    float: left;
-    width: 1000px;
-    height: 100%;
-    margin-left: var(--chat-section-symmetrical-margin, 200px);
-}
-
-#usersSection{
-    float: left;
-    width: var(--users-section-symmetrical-width, 300px);
-    height: 650px;
-}
-
 ul{
     list-style-type: none;
-}
-
-.userButton{
-    width: 80%;
-    height: 50px;
-    font-size: 19px;
-    margin-bottom: 15px;
-    text-align: left;
-    padding: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
-    font-family: 'Ubuntu', sans-serif;
-    border-radius: 10px;
-    border-style: none;
-    background-color: #d7f0ed;
-}
-
-.userButton:hover{
-    background-color: #b3d9ff;
-    cursor: pointer;
 }
 
 .dateStyle{
@@ -122,7 +118,6 @@ ul{
 
     margin-top: 2px;
     border-radius: 5px;
-    /*background-color: #96ffd0;*/
     background-color: #f9f871;
     width: fit-content;
 }
@@ -147,6 +142,24 @@ ul{
     background-color: red;
 }
 
+.msgInput{
+    margin-bottom: 15px;
+    font-size: 17px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border-style: none;
+    padding: 5px;
+    font-family: 'Ubuntu', sans-serif;
+    background-color: #d7f0ed;
+    border: 2px solid #d7f0ed;
+}
+
+.msgInput:focus{
+    outline: none;
+    border: 2px solid #8fb8ff;
+    border-radius: 5px;
+}
+
 .sendMsgButton{
     padding-left: 22px;
     padding-right: 22px;
@@ -164,19 +177,56 @@ ul{
     cursor: pointer;
 }
 
-.msgInput{
-    font-size: 17px;
-    margin-top: 10px;
-    border-radius: 5px;
-    border-style: none;
-    padding: 5px;
-    font-family: 'Ubuntu', sans-serif;
-    background-color: #d7f0ed;
-    border: 2px solid #d7f0ed;
+#sideBar{
+    float: left;
+    width: 200px;
+    height: 100%;
 }
 
-.msgInput:focus{
-    outline: none;
-    border: 2px solid #8fb8ff;
-    border-radius: 5px;
+.onlineUsers{
+    position: relative;
+    display: inline-block;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.onlineUsers .usersInRoom{
+    visibility: hidden;
+    width: 200px;
+    background-color: #8fb8ff;
+    color: black;
+    text-align: center;
+    padding: 5px 0px;
+    border-radius: 6px;
+    font-family: 'Ubuntu', sans-serif;
+
+    position: absolute;
+    z-index: 1;
+    margin-top: 5px;
+
+    top: 100%;
+    left: 50%;
+    margin-left: -100px;
+
+    opacity: 0;
+    transition: opacity 1.2s;
+}
+
+.onlineUsers .usersInRoom::after{
+    content : " ";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #b3d9ff transparent
+}
+
+.onlineUsers:hover{
+    cursor: pointer;
+}
+
+.onlineUsers:hover .usersInRoom{
+    visibility: visible;
+    opacity: 1;
 }
