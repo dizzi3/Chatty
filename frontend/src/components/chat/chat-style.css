@@ -1,10 +1,16 @@
+:root{
+    /* uncomment for symmetrical layout, comment for basic */
+    --chat-section-symmetrical-margin: 250px;
+    --users-section-symmetrical-width: 250px;
+}
+
 body{
     background-color: #121212;
 }
 
 .chatStyle{
-    width: 1400px;
-    height: 900px;
+    width: 1500px;
+    height: 830px;
     margin-left: auto;
     margin-right: auto;
 
@@ -17,6 +23,7 @@ body{
     letter-spacing: 15px;
     font-family: 'Ubuntu', sans-serif;
     color: #f9f871;
+    height: 60px;
 }
 
 input{
@@ -27,7 +34,7 @@ input{
     border-radius: 10px;
     height: 700px;
     padding-top: 10px;
-    width: 975px;
+    width: 1000px;
     display: inline-block;
     background-color: #8fb8ff;
     margin-bottom: 15px;
@@ -35,7 +42,7 @@ input{
 
 #messages { 
     list-style-type: none;
-    width: 100%;
+    width: 1000px;
     height: 730px;
     text-align: left;  
     margin-left: 0px;  
@@ -54,13 +61,13 @@ input{
 #chatSection{
     float: left;
     width: 1000px;
-    height: 80%;
-    margin-left: 30px;
+    height: 100%;
+    margin-left: var(--chat-section-symmetrical-margin, 200px);
 }
 
 #usersSection{
     float: left;
-    width: 300px;
+    width: var(--users-section-symmetrical-width, 300px);
     height: 650px;
 }
 
@@ -69,7 +76,7 @@ ul{
 }
 
 .userButton{
-    width: 70%;
+    width: 80%;
     height: 50px;
     font-size: 19px;
     margin-bottom: 15px;

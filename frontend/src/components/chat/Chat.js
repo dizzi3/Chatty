@@ -326,7 +326,7 @@ function Chat(props){
                     <Scrollbars ref={scrollbar}
                     renderTrackHorizontal={props => <div {...props} className="track-horizontal" style={{display:"none"}}/>}
                     renderThumbHorizontal={props => <div {...props} className="thumb-horizontal" style={{display:"none"}}/>}
-                     style={{ width: 970, height: 690 }}>
+                     style={{ width: 995, height: 690 }}>
                         <ul id="messages">
                         
                         </ul>
