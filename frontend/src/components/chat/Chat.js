@@ -8,7 +8,6 @@ import { ALL_CHAT_NAME } from '../../config'
 import { RiMessage2Fill } from 'react-icons/ri'
 import ReactDom from 'react-dom'
 import { Scrollbars } from 'react-custom-scrollbars'
-import { FaInfoCircle } from 'react-icons/fa'
 
 function Chat(props){
 
@@ -358,7 +357,7 @@ function Chat(props){
 
             <div id="sideBar">
                 <ul id="sideBarItems">
-                    <div class="onlineUsers">2 online mens
+                    <div class="onlineUsers">2 mens online
                         <span class="usersInRoom">3 gentlemens offline<br/>esssaaaa<br/>wtfff</span>
                     </div>
                 </ul>

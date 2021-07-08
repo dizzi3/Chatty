@@ -1,0 +1,10 @@
+#container{
+    float: left;
+    width: var(300px);
+    height: 650px;
+    padding-right: 30px;
+}
+
+ul{
+    list-style-type: none;
+}
