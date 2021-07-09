@@ -1,5 +1,4 @@
 import React from 'react'
-import Chat from '../chat/Chat'
 import Login from '../login/Login'
 import SignIn from '../sign-in/SignIn'
 import CleanChat from '../chat/CleanChat'
@@ -13,25 +12,25 @@ class Chatty extends React.Component{
 
             <div className="App">
                 
-            <Router>
+                <Router>
 
-                <Route exact path="/">
-                    <Redirect to="/login" />
-                </Route>
+                    <Route exact path="/">
+                        <Redirect to="/login" />
+                    </Route>
 
-                <Route path='/chat'>
-                    <CleanChat />
-                </Route>
+                    <Route path='/chat'>
+                        <CleanChat />
+                    </Route>
 
-                <Route path='/login'>
-                    <Login />
-                </Route>
+                    <Route path='/login'>
+                        <Login />
+                    </Route>
 
-                <Route path='/sign-in'>
-                    <SignIn />
-                </Route>
+                    <Route path='/sign-in'>
+                        <SignIn />
+                    </Route>
 
-            </Router>
+                </Router>
 
             </div>
 

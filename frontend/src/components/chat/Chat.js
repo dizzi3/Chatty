@@ -318,7 +318,7 @@ function Chat(props){
             <div id="logo">
                 CHATTY
             </div>
-
+            
             <div id="usersSection">
                 <ul id="users"> 
 

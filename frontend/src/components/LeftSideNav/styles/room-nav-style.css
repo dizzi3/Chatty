@@ -1,10 +1,8 @@
-#container{
+#roomsContainer{
     float: left;
-    width: var(300px);
-    height: 650px;
-    padding-right: 30px;
+    width: 300px;
 }
 
-ul{
+#rooms{
     list-style-type: none;
 }

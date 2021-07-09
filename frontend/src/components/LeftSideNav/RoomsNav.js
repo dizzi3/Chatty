@@ -56,9 +56,9 @@ class RoomsNav extends React.Component{
     render(){
         return(
 
-            <div id='container'>
+            <div id='roomsContainer'>
 
-                <ul id="rooms">
+                <ul id='rooms'>
 
                 </ul>
 
