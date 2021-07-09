@@ -36,7 +36,7 @@ class CleanChat extends React.Component{
             { username: 'qweqweq', date: '2021-06-29T18:40:29.207+00:00',  content: 'ccccc' }, 
             { username: 'qweqweq', date: '2021-06-29T18:40:29.207+00:00',  content: 'ccccc' }, 
             { username: 'qq', date: '2021-06-29T18:40:29.207+00:00',  content: 'lulz' }, 
-            { username: 'qweqweq', date: '2021-06-29T18:40:29.207+00:00',  content: 'ccccc' },
+            { username: 'qweqweq', date: '2021-06-29T18:40:29.207+00:00',  content: 'eeeee' },
         ]
 
     }

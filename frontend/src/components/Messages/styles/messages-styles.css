@@ -1,5 +1,6 @@
 #messagesContainer{
     width: 900px;
+    height: 600px;
     background-color: #8fb8ff;
     float: left;
     border-radius: 10px;
@@ -13,15 +14,13 @@
     text-align: left;
     list-style-type: none;
     width: 835px;
+    height: 600px;
     padding-right: 20px;
+    overflow: scroll;
 }
 
-#messages > li{
+#messages li{
     margin-bottom: 10px;
-}
-
-#messages > li:last-child{
-    margin-bottom: 0px;
 }
 
 .username{

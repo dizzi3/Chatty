@@ -1,7 +1,7 @@
-import React, { createRef } from 'react'
+import React from 'react'
 import './styles/messages-styles.css'
-import { Scrollbars } from 'react-custom-scrollbars'
 import DateHelper from '../../DateHelper'
+import Scrollbar from 'smooth-scrollbar'
 
 class Messages extends React.Component{
 
@@ -11,17 +11,23 @@ class Messages extends React.Component{
         this.state = {
             messages: props.messages
         }
-
-        this.scrollbar = createRef()
     }
 
     componentDidMount(){
         this.initializeMessages()
+        this.initializeSmoothScrollbar()
+    }
+
+    initializeSmoothScrollbar(){
+        Scrollbar.init(document.querySelector('#messages'), {
+            damping: 0.1
+        })
     }
 
     componentDidUpdate(){
         this.initializeMessages()
     }
+
 
     initializeMessages(){
 
@@ -36,16 +42,15 @@ class Messages extends React.Component{
                                 ' <span class="date">' + dateString + '</span>' + 
                                 '</br><span class="content">' + message.content + '</span>'
 
-            msgList.appendChild(msgItem)
-
-            this.scrollToTheBottom()            
+            msgList.appendChild(msgItem)  
         })
 
+        this.scrollToTheBottom()
     }
 
     scrollToTheBottom(){
-        if(this.scrollbar)
-            this.scrollbar.current.scrollToBottom()
+        const msgList = document.getElementById('messages')
+        msgList.scrollTo(0, msgList.lastChild.getBoundingClientRect().bottom)
     }
 
     render(){
@@ -53,16 +58,9 @@ class Messages extends React.Component{
 
             <div id='messagesContainer'>
 
-                <Scrollbars ref={this.scrollbar}
-                            renderTrackHorizontal={props => <div {...props} style={{display:"none"}}/>}
-                            renderThumbHorizontal={props => <div {...props} style={{display:"none"}}/>}
-                            style={{ width: 895, height: 590 }}>
+                <ul id='messages'>
 
-                    <ul id='messages'>
-
-                    </ul>
-
-                </Scrollbars>
+                </ul>
 
             </div>
 
