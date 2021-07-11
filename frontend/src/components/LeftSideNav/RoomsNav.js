@@ -7,7 +7,7 @@ class RoomsNav extends React.Component{
 
     constructor(props){
         super(props)
-
+        
         this.state = {
             rooms : props.rooms
         }
@@ -19,13 +19,8 @@ class RoomsNav extends React.Component{
         this.createRooms()
     }
 
-    componentDidUpdate(){
-        this.createRooms()
-    }
-
     createRooms = () => {
 
-        this.clearRooms()
         const roomsList = document.getElementById('rooms')
 
         for(const room of this.state.rooms){
@@ -41,6 +36,22 @@ class RoomsNav extends React.Component{
             roomsList.appendChild(roomItem)
         }
         
+    }
+
+    componentDidUpdate(previousProps){
+        this.updateProps(previousProps)
+        this.clearRooms()
+        this.createRooms()
+    }
+
+    updateProps(previousProps){
+
+        if(this.props.rooms !== previousProps.rooms){
+            this.setState({
+                rooms: this.props.rooms
+            })
+        }
+
     }
 
     clearRooms = () => {

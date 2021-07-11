@@ -7,7 +7,7 @@ class Messages extends React.Component{
 
     constructor(props){
         super(props)
-
+        
         this.state = {
             messages: props.messages
         }
@@ -18,18 +18,7 @@ class Messages extends React.Component{
         this.initializeSmoothScrollbar()
     }
 
-    initializeSmoothScrollbar(){
-        Scrollbar.init(document.querySelector('#messages'), {
-            damping: 0.1
-        })
-    }
-
-    componentDidUpdate(){
-        this.initializeMessages()
-    }
-
-
-    initializeMessages(){
+    async initializeMessages(){
 
         this.state.messages.forEach(message => {
 
@@ -51,6 +40,33 @@ class Messages extends React.Component{
     scrollToTheBottom(){
         const msgList = document.getElementById('messages')
         msgList.scrollTo(0, msgList.lastChild.getBoundingClientRect().bottom)
+    }
+
+    initializeSmoothScrollbar(){
+        Scrollbar.init(document.querySelector('#messages'), {
+            damping: 0.1
+        })
+    }
+
+    componentDidUpdate(previousProps){
+        this.updateProps(previousProps)
+        this.clearMessages()
+        this.initializeMessages()
+    }
+
+    updateProps(previousProps){
+
+        if(this.props.messages !== previousProps.messages){
+            this.setState({
+                messages: this.props.messages
+            })
+        }
+
+    }
+
+    clearMessages(){
+        const msgList = document.getElementById('messages')
+        msgList.innerHTML = ''
     }
 
     render(){

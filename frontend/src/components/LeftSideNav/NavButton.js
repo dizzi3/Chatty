@@ -70,7 +70,7 @@ class NavButton extends React.Component{
     render(){
         return(
 
-            <button ref={this.button}/>
+            <button id='navButton' ref={this.button}/>
 
         )
     }

@@ -53,3 +53,7 @@
     background-color: #f9f871;
     width: fit-content;
 }
+
+.scrollbar-track{
+    border-radius: 10px;
+}
