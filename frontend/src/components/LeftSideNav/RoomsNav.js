@@ -61,7 +61,7 @@ class RoomsNav extends React.Component{
     }
 
     setCurrentRoom = (roomID) => {
-        console.log('setCurrentRoom called with ' + roomID + ' as roomID')
+        this.props.roomChanged(roomID)
     }
 
     render(){

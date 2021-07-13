@@ -31,7 +31,7 @@ function Login(props){
                 pathname: "/chat",
                 state: { 
                     username: res.data.username,
-                    userId: res.data._id
+                    userID: res.data._id
                 }
             })
 

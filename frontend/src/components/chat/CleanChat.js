@@ -1,42 +1,38 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import Logo from '../Logo/Logo'
 import RoomsNav from '../LeftSideNav/RoomsNav'
 import Messages from '../Messages/Messages'
-import Logo from '../Logo/Logo'
+import MessageInput from '../MessageInput/MessageInput'
 import './clean-chat-style.css'
 
-class CleanChat extends React.Component{
+function CleanChat(props){
 
-    constructor(props){
+    const [rooms, setRooms] = useState([
+        { roomID: 0, roomName: 'room0', newMsg: false, online: true },
+        { roomID: 1, roomName: 'room1', newMsg: true, online: true }
+    ])
 
-        super(props)
+    const [messages, setMessages] = useState([
+        { username: 'qq', date: '2021-06-29T18:40:29.207+00:00',  content: 'lulz' }, 
+        { username: 'qweqweq', date: '2021-06-29T18:40:29.207+00:00',  content: 'ccccc' }
+    ])
 
-        this.state = {
-
-            rooms: [ 
-                { roomID: 0, roomName: 'room0', newMsg: false, online: true },
-                { roomID: 1, roomName: 'room1', newMsg: true, online: true }
-            ],
-
-            messages: [
-                { username: 'qq', date: '2021-06-29T18:40:29.207+00:00',  content: 'lulz' }, 
-                { username: 'qweqweq', date: '2021-06-29T18:40:29.207+00:00',  content: 'ccccc' }
-            ]
-
-        }
-
+    const roomChanged = (roomID) => {
+        console.log('room changed, ID: ' + roomID)
     }
 
-    render(){
-
-        return (
-            <div id='chatContainer'>
-                <Logo />
-                <RoomsNav rooms={this.state.rooms} />
-                <Messages messages={this.state.messages} />
-            </div>
-        )
-
+    const sendMessage = (message) => {
+        console.log('u sent ' + message)
     }
+
+    return (
+        <div id='chatContainer'>
+            <Logo />
+            <RoomsNav rooms={rooms} roomChanged={roomChanged} />
+            <Messages messages={messages} />
+            <MessageInput onSendMessage={sendMessage} />
+        </div>
+    )
 
 }
 

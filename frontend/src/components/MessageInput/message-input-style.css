@@ -1,0 +1,38 @@
+#inputContainer{
+    clear: both;
+}
+
+.msgInput{
+    margin-bottom: 15px;
+    font-size: 17px;
+    margin-top: 20px;
+    border-radius: 5px;
+    border-style: none;
+    padding: 5px;
+    font-family: 'Ubuntu', sans-serif;
+    background-color: #d7f0ed;
+    border: 2px solid #d7f0ed;
+}
+
+.msgInput:focus{
+    outline: none;
+    border: 2px solid #8fb8ff;
+    border-radius: 5px;
+}
+
+.sendButton{
+    padding-left: 22px;
+    padding-right: 22px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 17px;
+    background-color: #d7f0ed;
+    border-style: none;
+    border-radius: 5px;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.sendButton:hover{
+    background-color: #b3d9ff;
+    cursor: pointer;
+}
