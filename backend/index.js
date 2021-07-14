@@ -30,13 +30,13 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
 
         //TODO: UNCOMMENT!!
-        //UserSocket.setOffline({ socketID: socket.id })
+        UserSocket.setOffline({ socketID: socket.id })
         
         io.sockets.emit('userStatusChanged', UserSocket.sockets)
     })
 
     socket.on('userConnected', async (data) => {
-        
+
         let socketUser = UserSocket.sockets.find( ({ userID }) => userID === data.userID)
         
         if(socketUser === undefined){
