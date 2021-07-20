@@ -12,7 +12,8 @@ class NavButton extends React.Component{
             roomID: props.roomID,
             roomName: props.roomName,
             newMsg: props.newMsg,
-            online: props.online
+            online: props.online,
+            roomType: props.roomType
         }
 
         this.button = React.createRef()
@@ -64,7 +65,7 @@ class NavButton extends React.Component{
     }
 
     buttonOnClick = () => {
-        this.props.setCurrentRoom(this.state.roomID)
+        this.props.setCurrentRoom({ roomID: this.state.roomID, roomType: this.state.roomType })
     }
 
     render(){

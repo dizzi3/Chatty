@@ -11,27 +11,25 @@ import RoomsController from '../../Controllers/RoomsController'
 function CleanChat(props){
 
     const location = useLocation()
-    let roomsController
+
+    const [userSocket, setUserSocket] = useState([])
+
+    const [rooms, setRooms] = useState([])
+
+    const [messages, setMessages] = useState([])
 
     useEffect(() => {
 
         const username = location.state.username
         const userID = location.state.userID
 
-        roomsController = new RoomsController(updateRooms)
-        const userSocket = new UserSocketController(username, userID, roomsController)
+        const roomsController = new RoomsController(updateRooms)
+        setUserSocket(new UserSocketController(username, userID, roomsController, updateMessages))
 
     }, [])
 
-    const [rooms, setRooms] = useState([])
-
-    const [messages, setMessages] = useState([
-        { username: 'qq', date: '2021-06-29T18:40:29.207+00:00',  content: 'lulz' }, 
-        { username: 'qweqweq', date: '2021-06-29T18:40:29.207+00:00',  content: 'ccccc' }
-    ])
-
-    const roomChanged = (roomID) => {
-        console.log('room changed, ID: ' + roomID)
+    const roomChanged = (data) => {
+        userSocket.onRoomChanged(data)
     }
 
     const sendMessage = (message) => {
@@ -40,6 +38,10 @@ function CleanChat(props){
 
     const updateRooms = (rooms) => {
         setRooms(rooms)
+    }
+
+    const updateMessages = (msgs) => {
+        setMessages(msgs)
     }
 
     return (

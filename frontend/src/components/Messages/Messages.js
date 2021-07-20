@@ -5,6 +5,9 @@ import Scrollbar from 'smooth-scrollbar'
 
 class Messages extends React.Component{
 
+    static SCROLL_SPEED = 0.1
+    static SCROLLING_TO_BOTTOM_DURATION = 3000
+
     constructor(props){
         super(props)
         
@@ -15,14 +18,15 @@ class Messages extends React.Component{
 
     componentDidMount(){
         this.initializeMessages()
-        this.initializeSmoothScrollbar()
+        this.initializeScrollbar()
     }
 
-    async initializeMessages(){
+    initializeMessages(){
+
+        const msgList = document.getElementById('messages')
 
         this.state.messages.forEach(message => {
 
-            const msgList = document.getElementById('messages')
             const msgItem = document.createElement('li')
 
             const dateString = DateHelper.getDateString(new Date(message.date))
@@ -31,27 +35,35 @@ class Messages extends React.Component{
                                 ' <span class="date">' + dateString + '</span>' + 
                                 '</br><span class="content">' + message.content + '</span>'
 
-            msgList.appendChild(msgItem)  
+            msgList.appendChild(msgItem)
+        })
+        
+    }
+
+     initializeScrollbar(){
+
+        Scrollbar.init(document.querySelector('#messages'), {
+            damping: Messages.SCROLL_SPEED
         })
 
-        this.scrollToTheBottom()
+        this.scrollToTheBottom()   
     }
 
     scrollToTheBottom(){
         const msgList = document.getElementById('messages')
-        msgList.scrollTo(0, msgList.lastChild.getBoundingClientRect().bottom)
-    }
-
-    initializeSmoothScrollbar(){
-        Scrollbar.init(document.querySelector('#messages'), {
-            damping: 0.1
-        })
+        const scrollbar = Scrollbar.get(document.querySelector('#messages'))
+        scrollbar.scrollTo(0, msgList.scrollHeight, Messages.SCROLLING_TO_BOTTOM_DURATION)
     }
 
     componentDidUpdate(previousProps){
-        this.updateProps(previousProps)
-        this.clearMessages()
-        this.initializeMessages()
+        
+        if(this.updateProps(previousProps)){
+            this.destroyScrollbar()
+            this.clearMessages()
+            this.initializeMessages()
+            this.initializeScrollbar()
+        }
+        
     }
 
     updateProps(previousProps){
@@ -60,13 +72,24 @@ class Messages extends React.Component{
             this.setState({
                 messages: this.props.messages
             })
+
+            return false
         }
 
+        return true
     }
 
     clearMessages(){
         const msgList = document.getElementById('messages')
-        msgList.innerHTML = ''
+
+        while(msgList.firstChild)
+            msgList.removeChild(msgList.firstChild)
+    }
+
+    destroyScrollbar(){
+        const msgList = document.getElementById('messages')
+        if(Scrollbar.has(msgList))
+            Scrollbar.destroy(msgList)
     }
 
     render(){

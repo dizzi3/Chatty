@@ -4,7 +4,7 @@ class RoomsController{
         this.updateRooms = updateRooms
     }
 
-    setNewRooms(users, thisUserID){
+    setUserRooms(users, thisUserID){
 
         const rooms = []
         const newMsgsFrom = this.getThisUserNewMsgsFrom(users, thisUserID)
@@ -16,7 +16,8 @@ class RoomsController{
 
             const newMsg = this.getNewMessageStatus(user.userID, newMsgsFrom)
 
-            rooms.push({ roomID: user.userID, roomName: user.username, newMsg: newMsg, online: user.online })
+            rooms.push({ roomID: user.userID, roomName: user.username, newMsg: newMsg,
+                         online: user.online, roomType: 'private' })
         }
 
         this.updateRooms(rooms)

@@ -30,9 +30,9 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
 
         //TODO: UNCOMMENT!!
-        UserSocket.setOffline({ socketID: socket.id })
+        //UserSocket.setOffline({ socketID: socket.id })
         
-        io.sockets.emit('userStatusChanged', UserSocket.sockets)
+        //io.sockets.emit('userStatusChanged', UserSocket.sockets)
     })
 
     socket.on('userConnected', async (data) => {
@@ -135,7 +135,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('getMessages', (data) => {
-
+        
         if(data.roomType === 'private'){
 
             sender = data.sender
@@ -151,8 +151,6 @@ io.on('connection', (socket) => {
 
                 socket.emit('updateMessages', messages)
             })
-
-
 
         }else{
             to = data.to

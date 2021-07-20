@@ -31,6 +31,7 @@ class RoomsNav extends React.Component{
                             roomName={room.roomName}
                             newMsg={room.newMsg}
                             online={room.online}
+                            roomType={room.roomType}
                             setCurrentRoom={this.setCurrentRoom} />, roomItem)
 
             roomsList.appendChild(roomItem)
