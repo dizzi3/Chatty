@@ -179,6 +179,10 @@ io.on('connection', (socket) => {
 
     })
 
+    socket.on('updateRooms', () => {
+        socket.emit('userStatusChanged', UserSocket.sockets)
+    })
+
 })
 
 server.listen(config.port, () => {

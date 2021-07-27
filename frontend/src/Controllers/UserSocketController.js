@@ -42,10 +42,9 @@ class UserSocketController{
                 
                 this.clearNewMsgFrom(message)
                 this.emitGetMessagesFromServer(message)
-
-            }else{
-                //update rooms nav so the newMsgFrom icon is displayed
-            }
+            
+            }else
+                socket.emit('updateRooms')
 
         })
 
@@ -88,9 +87,14 @@ class UserSocketController{
         
     }
 
-    onRoomChanged(data){
+    async onRoomChanged(data){
 
-        //TODO: clear the newMsgFrom if set
+        await socket.emit('removeNewMsgFrom', {
+            userID: this.userID,
+            from: data.roomID
+        })
+
+        socket.emit('updateRooms')
 
         if(data.roomType === 'private')
             socket.emit('getMessages', { roomType: data.roomType, sender: this.userID, receiver: data.roomID })
