@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './message-input-style.css'
 
 function MessageInput(props){
@@ -12,7 +12,31 @@ function MessageInput(props){
     
     const onSendMessage = () => {
         props.onSendMessage(msg)
+
+        var input = document.getElementById('msgInput')
+        input.value = ''
+        setMsg('')
     }
+
+    const setSendMsgOnEnter = () => {
+        
+        var input = document.getElementById('msgInput')
+
+        input.addEventListener('keyup', (event) => {
+
+            if(event.key === 'Enter'){
+                event.preventDefault()
+
+                document.getElementById('sendButton').click()
+            }
+        })
+    }
+
+    useEffect(() => {
+
+        setSendMsgOnEnter()
+
+    }, [] )
     
     return (
     
@@ -21,12 +45,14 @@ function MessageInput(props){
             <input type='text'
                    value={ msg }
                    onChange={ msgChangedHandler }
-                   className='msgInput'></input>
+                   className='msgInput'
+                   id='msgInput'></input>
     
             <br/>
 
             <button onClick={ onSendMessage }
-                    className='sendButton'>Send</button>
+                    className='sendButton'
+                    id='sendButton'>Send</button>
     
         </div>
     

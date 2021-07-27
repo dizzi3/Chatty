@@ -29,11 +29,12 @@ function CleanChat(props){
     }, [])
 
     const roomChanged = (data) => {
+        RoomsController.currentRoomData = data
         userSocket.onRoomChanged(data)
     }
 
     const sendMessage = (message) => {
-        console.log('u sent ' + message)
+        userSocket.sendMessage(message)
     }
 
     const updateRooms = (rooms) => {

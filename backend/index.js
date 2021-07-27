@@ -19,6 +19,7 @@ const cors = require('cors')
 const UserSocket = require('./UserSocket')
 const MessageModel = require('./database/models/MessageModel')
 const User = require('./database/models/UserModel')
+const fetch = require('node-fetch')
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -74,6 +75,18 @@ io.on('connection', (socket) => {
 
     socket.on('msg', async (msg) => {
 
+        await fetch('http://localhost:3012/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                content: msg.content,
+                fromUser: msg.fromUser,
+                userId: msg.fromUserId,
+                to: msg.to,
+                date: msg.date
+            })
+        })
+
         if(msg.roomType === 'private'){
             
             const toUser = UserSocket.findSocketByUserID(msg.to)
@@ -111,7 +124,8 @@ io.on('connection', (socket) => {
 
         }
 
-        io.sockets.in(msg.to).emit('msg', msg)
+        io.sockets.in(msg.to).emit('newMessageReceiver', msg)
+        io.sockets.in(msg.fromUserId).emit('newMessageSender', msg)
     })
 
     socket.on('removeNewMsgFrom', (data) => {

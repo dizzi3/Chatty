@@ -6,7 +6,6 @@ import Scrollbar from 'smooth-scrollbar'
 class Messages extends React.Component{
 
     static SCROLL_SPEED = 0.1
-    static SCROLLING_TO_BOTTOM_DURATION = 3000
 
     constructor(props){
         super(props)
@@ -16,8 +15,8 @@ class Messages extends React.Component{
         }
     }
 
-    componentDidMount(){
-        this.initializeMessages()
+    async componentDidMount(){
+        await this.initializeMessages()
         this.initializeScrollbar()
     }
 
@@ -40,9 +39,9 @@ class Messages extends React.Component{
         
     }
 
-     initializeScrollbar(){
+    async initializeScrollbar(){
 
-        Scrollbar.init(document.querySelector('#messages'), {
+        await Scrollbar.init(document.querySelector('#messages'), {
             damping: Messages.SCROLL_SPEED
         })
 
@@ -52,15 +51,15 @@ class Messages extends React.Component{
     scrollToTheBottom(){
         const msgList = document.getElementById('messages')
         const scrollbar = Scrollbar.get(document.querySelector('#messages'))
-        scrollbar.scrollTo(0, msgList.scrollHeight, Messages.SCROLLING_TO_BOTTOM_DURATION)
+        scrollbar.scrollTo(0, msgList.scrollHeight)
     }
 
-    componentDidUpdate(previousProps){
+    async componentDidUpdate(previousProps){
         
         if(this.updateProps(previousProps)){
-            this.destroyScrollbar()
-            this.clearMessages()
-            this.initializeMessages()
+            await this.destroyScrollbar()
+            await this.clearMessages()
+            await this.initializeMessages()
             this.initializeScrollbar()
         }
         

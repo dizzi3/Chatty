@@ -1,5 +1,7 @@
 class RoomsController{
 
+    static currentRoomData = {}
+
     constructor(updateRooms){
         this.updateRooms = updateRooms
     }

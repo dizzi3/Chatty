@@ -1,10 +1,12 @@
 import { socket } from '../services/socket'
+import RoomsController from './RoomsController'
 
 class UserSocketController{
 
     constructor(username, userID, roomsController, updateMessages){
 
         this.userID = userID
+        this.username = username
 
         socket.connect()
     
@@ -34,12 +36,79 @@ class UserSocketController{
 
         })
 
+        socket.on('newMessageReceiver', (message) => {
+
+            if(this.isMessageFromTheCurrentRoom(message)){
+                
+                this.clearNewMsgFrom(message)
+                this.emitGetMessagesFromServer(message)
+
+            }else{
+                //update rooms nav so the newMsgFrom icon is displayed
+            }
+
+        })
+
+        socket.on('newMessageSender', (message) => {
+            this.emitGetMessagesFromServer(message)
+        })
+
+    }
+
+    isMessageFromTheCurrentRoom(message){
+        return ((message.roomType === 'room' && message.to === RoomsController.currentRoomData.roomID) ||
+        (message.roomType === 'private' && message.fromUserId === RoomsController.currentRoomData.roomID))
+    }
+
+    clearNewMsgFrom(message){
+        let from
+        
+        if(message.roomType === 'private')
+            from = message.fromUserId
+        else
+            from = message.to
+
+        socket.emit('removeNewMsgFrom', {
+            userID: this.userID,
+            from: from
+        })
+    }
+
+    emitGetMessagesFromServer(message){
+
+        if(message.roomType === 'private'){
+
+            socket.emit('getMessages', {
+                roomType: message.roomType,
+                sender: message.fromUserId,
+                receiver: message.to
+            })
+
+        }
+        
     }
 
     onRoomChanged(data){
 
+        //TODO: clear the newMsgFrom if set
+
         if(data.roomType === 'private')
             socket.emit('getMessages', { roomType: data.roomType, sender: this.userID, receiver: data.roomID })
+
+    }
+
+    sendMessage(message){
+
+        const currentRoomData = RoomsController.currentRoomData
+
+        socket.emit('msg', {
+            content: message, 
+            fromUser: this.username,
+            fromUserId: this.userID,
+            to: currentRoomData.roomID,
+            date: new Date().toISOString(),
+            roomType: currentRoomData.roomType
+        })
 
     }
 
