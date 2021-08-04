@@ -16,7 +16,7 @@
     width: 835px;
     height: 600px;
     padding-right: 20px;
-    overflow-y: auto;
+    overflow: hidden;
     scroll-behavior: smooth;
 }
 

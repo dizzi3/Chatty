@@ -26,7 +26,7 @@ function CleanChat(props){
         const roomsController = new RoomsController(updateRooms)
         setUserSocket(new UserSocketController(username, userID, roomsController, updateMessages))
 
-    }, [])
+    }, [location.state.username, location.state.userID] )
 
     const roomChanged = (data) => {
         RoomsController.currentRoomData = data

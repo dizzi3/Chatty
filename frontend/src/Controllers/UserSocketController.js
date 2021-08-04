@@ -17,7 +17,7 @@ class UserSocketController{
     
         socket.on('userStatusChanged', (users) => {
     
-            roomsController.setUserRooms(users, userID)
+            roomsController.setUserPrivateMessageRooms(users, userID)
             
         })
 

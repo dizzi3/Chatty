@@ -25,7 +25,6 @@ class Messages extends React.Component{
         const msgList = document.getElementById('messages')
 
         this.state.messages.forEach(message => {
-
             const msgItem = document.createElement('li')
 
             const dateString = DateHelper.getDateString(new Date(message.date))
@@ -36,7 +35,7 @@ class Messages extends React.Component{
 
             msgList.appendChild(msgItem)
         })
-        
+
     }
 
     async initializeScrollbar(){
@@ -58,7 +57,7 @@ class Messages extends React.Component{
         
         if(this.updateProps(previousProps)){
             await this.destroyScrollbar()
-            await this.clearMessages()
+            await this.clearMessagesList()
             await this.initializeMessages()
             this.initializeScrollbar()
         }
@@ -72,23 +71,23 @@ class Messages extends React.Component{
                 messages: this.props.messages
             })
 
-            return false
+            return true
         }
 
-        return true
-    }
-
-    clearMessages(){
-        const msgList = document.getElementById('messages')
-
-        while(msgList.firstChild)
-            msgList.removeChild(msgList.firstChild)
+        return false
     }
 
     destroyScrollbar(){
         const msgList = document.getElementById('messages')
         if(Scrollbar.has(msgList))
             Scrollbar.destroy(msgList)
+    }
+
+    clearMessagesList(){
+        const msgList = document.getElementById('messages')
+
+        while(msgList.firstChild)
+            msgList.removeChild(msgList.firstChild)
     }
 
     render(){

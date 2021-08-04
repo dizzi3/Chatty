@@ -6,7 +6,7 @@ class RoomsController{
         this.updateRooms = updateRooms
     }
 
-    setUserRooms(users, thisUserID){
+    setUserPrivateMessageRooms(users, thisUserID){
 
         const rooms = []
         const newMsgsFrom = this.getThisUserNewMsgsFrom(users, thisUserID)

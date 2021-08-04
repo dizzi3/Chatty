@@ -14,19 +14,25 @@ const config = require('./config')
 const path = require('path')
 const bodyParser = require('body-parser')
 const router = require('./routes/router')
-require('./database/mongoose')
 const cors = require('cors')
+const fetch = require('node-fetch')
+require('./database/mongoose')
+
 const UserSocket = require('./UserSocket')
 const MessageModel = require('./database/models/MessageModel')
+const RoomModel = require('./database/models/RoomModel')
 const User = require('./database/models/UserModel')
-const fetch = require('node-fetch')
+const Room = require('./Room')
 
 app.use(cors())
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', router)
 
+loadRooms()
+
 io.on('connection', (socket) => {
+
 
     socket.on('disconnect', () => {
 
@@ -188,3 +194,22 @@ io.on('connection', (socket) => {
 server.listen(config.port, () => {
     console.log('Server is listening on http://localhost:' + config.port)
 })
+
+async function loadRooms() {
+
+    Room.rooms = []
+
+    await RoomModel.find({}, (err, rooms) => {
+        
+        if(err)
+            return
+
+        rooms.forEach((room, index) => {
+            
+            Room.rooms.push(room)
+
+        })
+
+    })
+
+}
