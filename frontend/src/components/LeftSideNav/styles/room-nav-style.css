@@ -3,6 +3,10 @@
     width: 300px;
 }
 
-#rooms{
+#privateRooms{
+    list-style-type: none;
+}
+
+#multiRooms{
     list-style-type: none;
 }

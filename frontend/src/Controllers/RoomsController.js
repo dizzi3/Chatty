@@ -2,8 +2,9 @@ class RoomsController{
 
     static currentRoomData = {}
 
-    constructor(updateRooms){
-        this.updateRooms = updateRooms
+    constructor(updatePrivateMsgRooms, updateMultiRooms){
+        this.updatePrivateMsgRooms = updatePrivateMsgRooms
+        this.updateMultiRooms = updateMultiRooms
     }
 
     setUserPrivateMessageRooms(users, thisUserID){
@@ -22,7 +23,7 @@ class RoomsController{
                          online: user.online, roomType: 'private' })
         }
 
-        this.updateRooms(rooms)
+        this.updatePrivateMsgRooms(rooms)
     }
 
     getThisUserNewMsgsFrom(users, thisUserID){
@@ -37,6 +38,35 @@ class RoomsController{
     getNewMessageStatus(roomID, newMsgsFrom){
 
         if(newMsgsFrom.includes(roomID))
+            return true
+
+        return false
+    }
+
+    setMultiRooms(data, thisUserID){
+        
+        const rooms = []
+        
+        const allMultiRooms = data.multiRooms
+        const newMsgsFrom = data.newMsgsFrom
+
+        for(const room of allMultiRooms){
+
+            if(!this.didUserJoinMultiRoom(room, thisUserID))
+                continue
+            
+            const newMsg = this.getNewMessageStatus(room._id, newMsgsFrom)
+
+            rooms.push({ roomID: room._id, roomName: room.name, newMsg: newMsg,
+                         online: true, roomType: 'multi' })
+
+        }
+        
+        this.updateMultiRooms(rooms)
+    }
+
+    didUserJoinMultiRoom(room, userID){
+        if(room.founder === userID || room.joinedUsers.includes(userID))
             return true
 
         return false

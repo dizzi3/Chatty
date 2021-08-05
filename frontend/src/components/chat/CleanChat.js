@@ -14,7 +14,8 @@ function CleanChat(props){
 
     const [userSocket, setUserSocket] = useState([])
 
-    const [rooms, setRooms] = useState([])
+    const [privateMsgRooms, setPrivateMsgRooms] = useState([])
+    const [multiRooms, setMultiRooms] = useState([])
 
     const [messages, setMessages] = useState([])
 
@@ -23,7 +24,7 @@ function CleanChat(props){
         const username = location.state.username
         const userID = location.state.userID
 
-        const roomsController = new RoomsController(updateRooms)
+        const roomsController = new RoomsController(updatePrivateMsgRooms, updateMultiRooms)
         setUserSocket(new UserSocketController(username, userID, roomsController, updateMessages))
 
     }, [location.state.username, location.state.userID] )
@@ -37,8 +38,12 @@ function CleanChat(props){
         userSocket.sendMessage(message)
     }
 
-    const updateRooms = (rooms) => {
-        setRooms(rooms)
+    const updatePrivateMsgRooms = (rooms) => {
+        setPrivateMsgRooms(rooms)
+    }
+
+    const updateMultiRooms = (rooms) => {
+        setMultiRooms(rooms)
     }
 
     const updateMessages = (msgs) => {
@@ -48,7 +53,7 @@ function CleanChat(props){
     return (
         <div id='chatContainer'>
             <Logo />
-            <RoomsNav rooms={rooms} roomChanged={roomChanged} />
+            <RoomsNav privateMsgRooms={privateMsgRooms} multiRooms={multiRooms} roomChanged={roomChanged} />
             <Messages messages={messages} />
             <MessageInput onSendMessage={sendMessage} />
         </div>

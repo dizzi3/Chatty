@@ -9,21 +9,23 @@ class RoomsNav extends React.Component{
         super(props)
         
         this.state = {
-            rooms : props.rooms
+            privateMsgRooms : props.privateMsgRooms,
+            multiRooms : props.multiRooms
         }
 
         this.setCurrentRoom =  this.setCurrentRoom.bind(this)   
     }
 
     componentDidMount(){
-        this.createRooms()
+        this.createPrivateRooms()
+        this.createMultiRooms()
     }
 
-    createRooms = () => {
+    createPrivateRooms = () => {
 
-        const roomsList = document.getElementById('rooms')
+        const roomsList = document.getElementById('privateRooms')
 
-        for(const room of this.state.rooms){
+        for(const room of this.state.privateMsgRooms){
             const roomItem = document.createElement('li')
             
             ReactDOM.render(<NavButton 
@@ -39,26 +41,53 @@ class RoomsNav extends React.Component{
         
     }
 
+    createMultiRooms = () => {
+        const roomsList = document.getElementById('multiRooms')
+        
+        for(const room of this.state.multiRooms){
+            const roomItem = document.createElement('li')
+
+            ReactDOM.render(<NavButton
+                            roomID={room.roomID}
+                            roomName={room.roomName}
+                            newMsg={room.newMsg}
+                            online={room.online}
+                            roomType={room.roomType}
+                            setCurrentRoom={this.setCurrentRoom} />, roomItem)
+
+            roomsList.appendChild(roomItem)
+        }
+    }
+
     componentDidUpdate(previousProps){
         this.updateProps(previousProps)
         this.clearRooms()
-        this.createRooms()
+        this.createPrivateRooms()
+        this.createMultiRooms()
     }
 
     updateProps(previousProps){
 
-        if(this.props.rooms !== previousProps.rooms){
+        if(this.props.privateMsgRooms !== previousProps.privateMsgRooms){
             this.setState({
-                rooms: this.props.rooms
+                privateMsgRooms: this.props.privateMsgRooms
+            })
+        }
+
+        if(this.props.multiRooms !== previousProps.multiRooms){
+            this.setState({
+                multiRooms: this.props.multiRooms
             })
         }
 
     }
 
     clearRooms = () => {
-        const roomsList = document.getElementById('rooms')
+        const privateRoomsList = document.getElementById('privateRooms')
+        const multiRoomsList = document.getElementById('multiRooms')
 
-        roomsList.innerHTML = ''
+        privateRoomsList.innerHTML = ''
+        multiRoomsList.innerHTML = ''
     }
 
     setCurrentRoom = (data) => {
@@ -70,7 +99,11 @@ class RoomsNav extends React.Component{
 
             <div id='roomsContainer'>
 
-                <ul id='rooms'>
+                <ul id='privateRooms'>
+
+                </ul>
+
+                <ul id='multiRooms'>
 
                 </ul>
 

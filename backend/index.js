@@ -22,7 +22,7 @@ const UserSocket = require('./UserSocket')
 const MessageModel = require('./database/models/MessageModel')
 const RoomModel = require('./database/models/RoomModel')
 const User = require('./database/models/UserModel')
-const Room = require('./Room')
+const MultiRoom = require('./MultiRoom')
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -72,10 +72,9 @@ io.on('connection', (socket) => {
 
         })
 
-        socket.leave(socket.id)
-        socket.join(data.userID)
-        socket.join('/')
+        joinRooms(socket, data.userID)
 
+        socket.emit('updateMultiRooms', { multiRooms: MultiRoom.rooms, newMsgsFrom: socketUser.newMsgFrom })
         io.sockets.emit('userStatusChanged', UserSocket.sockets)
     }) 
 
@@ -106,6 +105,8 @@ io.on('connection', (socket) => {
                 }
             }, function(error, success){})
 
+            io.sockets.in(msg.to).emit('newMessageReceiver', msg)
+
         }else{
 
             const socketsIDs = io.sockets.in(msg.to).adapter.sids
@@ -125,12 +126,12 @@ io.on('connection', (socket) => {
                         }
                     }, function(error, success){})
 
+                    io.sockets.in(user.userID).emit('newMessageReceiver', msg)
                 }
             })
 
         }
-
-        io.sockets.in(msg.to).emit('newMessageReceiver', msg)
+        
         io.sockets.in(msg.fromUserId).emit('newMessageSender', msg)
     })
 
@@ -185,8 +186,13 @@ io.on('connection', (socket) => {
 
     })
 
-    socket.on('updateRooms', () => {
+    socket.on('updatePrivateRooms', () => {
         socket.emit('userStatusChanged', UserSocket.sockets)
+    })
+
+    socket.on('updateMultiRooms', () => {
+        const user = UserSocket.findSocket({socketID: socket.id})
+        socket.emit('updateMultiRooms', { multiRooms: MultiRoom.rooms, newMsgsFrom: user.newMsgFrom })
     })
 
 })
@@ -195,21 +201,30 @@ server.listen(config.port, () => {
     console.log('Server is listening on http://localhost:' + config.port)
 })
 
-async function loadRooms() {
+function loadRooms() {
 
-    Room.rooms = []
+    MultiRoom.rooms = []
 
-    await RoomModel.find({}, (err, rooms) => {
+    RoomModel.find({}, (err, rooms) => {
         
         if(err)
             return
 
         rooms.forEach((room, index) => {
-            
-            Room.rooms.push(room)
-
+            MultiRoom.rooms.push(new MultiRoom(room))
         })
 
     })
 
+}
+
+function joinRooms(socket, userID){
+    socket.leave(socket.id)
+    socket.join(userID)
+    
+    MultiRoom.rooms.forEach((room, index) => {
+        if(room.didUserJoin(userID))
+            socket.join(room._id)
+
+    })
 }

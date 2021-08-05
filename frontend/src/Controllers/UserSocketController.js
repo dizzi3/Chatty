@@ -16,9 +16,11 @@ class UserSocketController{
         })
     
         socket.on('userStatusChanged', (users) => {
-    
             roomsController.setUserPrivateMessageRooms(users, userID)
-            
+        })
+
+        socket.on('updateMultiRooms', (data) => {
+            roomsController.setMultiRooms(data, userID)
         })
 
         socket.on('updateMessages', (messages) => {
@@ -37,14 +39,18 @@ class UserSocketController{
         })
 
         socket.on('newMessageReceiver', (message) => {
-
+            
             if(this.isMessageFromTheCurrentRoom(message)){
                 
                 this.clearNewMsgFrom(message)
                 this.emitGetMessagesFromServer(message)
             
-            }else
-                socket.emit('updateRooms')
+            }else{
+                if(message.roomType === 'private')
+                    socket.emit('updatePrivateRooms')
+                else
+                    socket.emit('updateMultiRooms')
+            }
 
         })
 
@@ -55,7 +61,7 @@ class UserSocketController{
     }
 
     isMessageFromTheCurrentRoom(message){
-        return ((message.roomType === 'room' && message.to === RoomsController.currentRoomData.roomID) ||
+        return ((message.roomType === 'multi' && message.to === RoomsController.currentRoomData.roomID) ||
         (message.roomType === 'private' && message.fromUserId === RoomsController.currentRoomData.roomID))
     }
 
@@ -83,6 +89,12 @@ class UserSocketController{
                 receiver: message.to
             })
 
+        }else{
+
+            socket.emit('getMessages', {
+                to: message.to
+            })
+
         }
         
     }
@@ -94,11 +106,14 @@ class UserSocketController{
             from: data.roomID
         })
 
-        socket.emit('updateRooms')
-
-        if(data.roomType === 'private')
+        if(data.roomType === 'private'){
+            socket.emit('updatePrivateRooms')
             socket.emit('getMessages', { roomType: data.roomType, sender: this.userID, receiver: data.roomID })
-
+        }
+        else{
+            socket.emit('updateMultiRooms')
+            socket.emit('getMessages', { roomType: data.roomType,  to: data.roomID})
+        }
     }
 
     sendMessage(message){
