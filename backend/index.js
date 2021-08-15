@@ -37,9 +37,9 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
 
         //TODO: UNCOMMENT!!
-        //UserSocket.setOffline({ socketID: socket.id })
+        UserSocket.setOffline({ socketID: socket.id })
         
-        //io.sockets.emit('userStatusChanged', UserSocket.sockets)
+        io.sockets.emit('userStatusChanged', UserSocket.sockets)
     })
 
     socket.on('userConnected', async (data) => {
@@ -109,14 +109,15 @@ io.on('connection', (socket) => {
 
         }else{
 
-            const socketsIDs = io.sockets.in(msg.to).adapter.sids
-            socketsIDs.forEach(function(value, key){
-                const socketID = key
+            const joinedUsersIDs = MultiRoom.getUsersInRoom(msg.to)
 
-                const user = UserSocket.findSocket({ 'socketID' : socketID })
+            joinedUsersIDs.forEach(function(value, key){
+                const userID = value
+
+                const user = UserSocket.findSocketByUserID(userID)
 
                 if(user && user.userID !== msg.fromUserId){
-                    
+
                     if(user.newMsgFrom.indexOf(msg.to) === -1)
                         user.newMsgFrom.push(msg.to)
 
@@ -193,6 +194,32 @@ io.on('connection', (socket) => {
     socket.on('updateMultiRooms', () => {
         const user = UserSocket.findSocket({socketID: socket.id})
         socket.emit('updateMultiRooms', { multiRooms: MultiRoom.rooms, newMsgsFrom: user.newMsgFrom })
+    })
+
+    socket.on('getUsersInRoom', (roomID) => {
+
+        if(roomID === null)
+            return
+
+        const usersIDs = MultiRoom.getUsersInRoom(roomID)
+
+        let users = []
+
+        if(usersIDs === null)
+            return
+
+        usersIDs.forEach((userID, index) => {
+            const user = UserSocket.findSocketByUserID(userID)
+
+            if(user !== undefined){
+                users.push({
+                    username: user.username,
+                    online: user.online}
+                )
+            }
+        })
+
+        socket.emit('setUsersInRoom', users)
     })
 
 })

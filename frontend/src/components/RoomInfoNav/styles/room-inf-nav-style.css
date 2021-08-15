@@ -1,0 +1,74 @@
+#container{
+    width: 300px;
+    float: left;
+}
+
+.joinedUsers{
+    position: relative;
+    display: inline-block;
+    font-family: 'Ubuntu', sans-serif;
+    color: white;
+}
+
+.joinedUsers .usersDetails{
+    visibility: hidden;
+    width: 110px;
+    background-color: #8fb8ff;
+    color: black;
+    text-align: left;
+    padding: 5px 0px;
+    border-radius: 6px;
+    font-family: 'Ubuntu', sans-serif;
+
+    position: absolute;
+    z-index: 1;
+    margin-top: 5px;
+
+    top: 100%;
+    left: 50%;
+    margin-left: -75px;
+    
+    padding-left: 40px;
+
+    opacity: 0;
+    transition: opacity 1.2s;
+}
+
+.joinedUsers .usersDetails::after{
+    content : " ";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #b3d9ff transparent
+}
+
+.joinedUsers:hover{
+    cursor: default;
+}
+
+.joinedUsers:hover .usersDetails{
+    visibility: visible;
+    opacity: 1;
+}
+
+.usersDetails{
+    white-space: pre-line;
+}
+
+.onlineDot, .offlineDot{
+    height: 11px;
+    width: 11px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.onlineDot{
+    background-color: #00ff0d;
+}
+
+.offlineDot{
+    background-color: red;
+}

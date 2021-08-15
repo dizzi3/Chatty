@@ -7,6 +7,7 @@ import RoomsNav from '../LeftSideNav/RoomsNav'
 import Messages from '../Messages/Messages'
 import MessageInput from '../MessageInput/MessageInput'
 import RoomsController from '../../Controllers/RoomsController'
+import RoomInfoNav from '../RoomInfoNav/RoomInfoNav'
 
 function CleanChat(props){
 
@@ -19,19 +20,28 @@ function CleanChat(props){
 
     const [messages, setMessages] = useState([])
 
+    const [usersInCurrentRoom, setUsersInCurrentRoom] = useState([])
+    const [currentRoomType, setCurrentRoomType] = useState()
+
     useEffect(() => {
 
         const username = location.state.username
         const userID = location.state.userID
 
         const roomsController = new RoomsController(updatePrivateMsgRooms, updateMultiRooms)
-        setUserSocket(new UserSocketController(username, userID, roomsController, updateMessages))
+        setUserSocket(new UserSocketController(username, userID, roomsController, 
+                                               updateMessages, setUsersInfoForCurrentRoom))
 
     }, [location.state.username, location.state.userID] )
 
     const roomChanged = (data) => {
         RoomsController.currentRoomData = data
+        setCurrentRoomType(data.roomType)
         userSocket.onRoomChanged(data)
+    }
+
+    const setUsersInfoForCurrentRoom = (users) => {
+        setUsersInCurrentRoom(users)
     }
 
     const sendMessage = (message) => {
@@ -55,6 +65,7 @@ function CleanChat(props){
             <Logo />
             <RoomsNav privateMsgRooms={privateMsgRooms} multiRooms={multiRooms} roomChanged={roomChanged} />
             <Messages messages={messages} />
+            {currentRoomType === 'multi' ? <RoomInfoNav joinedUsers={usersInCurrentRoom}/> : null}
             <MessageInput onSendMessage={sendMessage} />
         </div>
     )

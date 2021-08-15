@@ -65,7 +65,11 @@ class NavButton extends React.Component{
     }
 
     buttonOnClick = () => {
-        this.props.setCurrentRoom({ roomID: this.state.roomID, roomType: this.state.roomType })
+        this.props.setCurrentRoom({ 
+            roomID: this.state.roomID,
+            roomType: this.state.roomType,
+            roomName: this.state.roomName
+        })
     }
 
     render(){

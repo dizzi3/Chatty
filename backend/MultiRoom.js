@@ -23,6 +23,23 @@ class MultiRoom{
         return false
     }
 
+    static getUsersInRoom(roomID){
+        let room = null
+
+        MultiRoom.rooms.forEach((r, index) => {
+            if(String(r._id) === roomID)
+                room = r
+        })
+
+        if(room === null)
+            return null
+
+        let users = room.joinedUsers.slice()
+        users.push(room.founder)
+
+        return users
+    }
+
 }
 
 module.exports = MultiRoom

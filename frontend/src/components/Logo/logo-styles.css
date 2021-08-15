@@ -6,3 +6,7 @@
     color: #f9f871;
     height: 60px;
 }
+
+#logo:hover{
+    cursor: default;
+}

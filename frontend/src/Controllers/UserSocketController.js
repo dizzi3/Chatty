@@ -3,10 +3,12 @@ import RoomsController from './RoomsController'
 
 class UserSocketController{
 
-    constructor(username, userID, roomsController, updateMessages){
+    constructor(username, userID, roomsController, updateMessages, setUsersInfoForCurrentRoom){
 
         this.userID = userID
         this.username = username
+
+        this.setUsersInfoForCurrentRoom = setUsersInfoForCurrentRoom
 
         socket.connect()
     
@@ -17,6 +19,7 @@ class UserSocketController{
     
         socket.on('userStatusChanged', (users) => {
             roomsController.setUserPrivateMessageRooms(users, userID)
+            socket.emit('getUsersInRoom', RoomsController.currentRoomData.roomID)
         })
 
         socket.on('updateMultiRooms', (data) => {
@@ -56,6 +59,10 @@ class UserSocketController{
 
         socket.on('newMessageSender', (message) => {
             this.emitGetMessagesFromServer(message)
+        })
+
+        socket.on('setUsersInRoom', (users) => {
+            this.setUsersInfoForCurrentRoom(users)
         })
 
     }
@@ -99,7 +106,7 @@ class UserSocketController{
         
     }
 
-    async onRoomChanged(data){
+    async onRoomChanged(data, setUsersInfoForCurrentRoom){
 
         await socket.emit('removeNewMsgFrom', {
             userID: this.userID,
@@ -113,6 +120,7 @@ class UserSocketController{
         else{
             socket.emit('updateMultiRooms')
             socket.emit('getMessages', { roomType: data.roomType,  to: data.roomID})
+            socket.emit('getUsersInRoom', data.roomID)
         }
     }
 
